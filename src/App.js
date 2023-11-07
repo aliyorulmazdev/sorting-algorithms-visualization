@@ -11,6 +11,11 @@ import "./App.css";
 import selectionSortVisualization from "./selectionSortVisualization";
 import { Button, ButtonGroup, Divider, Typography } from "@mui/material";
 import SpeedIcon from "@mui/icons-material/Speed";
+import MergeIcon from "@mui/icons-material/Merge";
+import MemoryIcon from "@mui/icons-material/Memory";
+import BubbleChartIcon from "@mui/icons-material/BubbleChart";
+import SelectAllIcon from "@mui/icons-material/SelectAll";
+import FastForwardIcon from "@mui/icons-material/FastForward";
 
 function App() {
   // eslint-disable-next-line
@@ -28,7 +33,7 @@ function App() {
   const [quickSortArray, setQuickSortArray] = useState([]);
   // eslint-disable-next-line
   const [isSorting, setIsSorting] = useState(false);
-  const gridStyle = { minHeight: 550 };
+  const gridStyle = { minHeight: 550, marginTop:'10px' };
 
   const startHeapSortVisualization = () => {
     setShowHeapSortModal(true);
@@ -785,10 +790,13 @@ function App() {
 
   return (
     <div className="App">
-      <h1 className="main-heading">Sorting Algorithms Visualization</h1>
+      <Typography variant="h3" 
+        style={{ marginTop: "40px", fontFamily: 'monospace' }}>Sorting Algorithms Visualization</Typography>
+      <Divider variant="middle" 
+        style={{ marginTop: "40px" }}/>
       <ButtonGroup variant="text" aria-label="text button group">
         <Button onClick={generateRandomArrays} startIcon={<SpeedIcon />}>
-          reTest Sort Algorithms
+          reTest Sort Algorithm Scores
         </Button>
       </ButtonGroup>
       <Divider variant="middle" />
@@ -798,37 +806,51 @@ function App() {
         aria-label="text button group"
         style={{ marginTop: "10px" }}
       >
-        <Button onClick={startMergeSortVisualization}>
+        <Button onClick={startMergeSortVisualization} startIcon={<MergeIcon />}>
           Merge Sort Visualization
         </Button>
-        <Button onClick={startHeapSortVisualization}>
+        <Button onClick={startHeapSortVisualization} startIcon={<MemoryIcon />}>
           Heap Sort Visualization
         </Button>
-        <Button onClick={startBubbleSortVisualization}>
+        <Button
+          onClick={startBubbleSortVisualization}
+          startIcon={<BubbleChartIcon />}
+        >
           Bubble Sort Visualization
         </Button>
-        <Button onClick={startSelectionSortVisualization}>
+        <Button
+          onClick={startSelectionSortVisualization}
+          startIcon={<SelectAllIcon />}
+        >
           Selection Sort Visualization
         </Button>
-        <Button onClick={startQuickSortVisualization}>
+        <Button
+          onClick={startQuickSortVisualization}
+          startIcon={<FastForwardIcon />}
+        >
           Quick Sort Visualization
         </Button>
       </ButtonGroup>
+      <Divider variant="middle" 
+        style={{ marginTop: "10px" , marginBottom:'10px'}}/>
       {averageSortingTime !== null && (
-        <div>
-          <h2 className="sub-heading">Average Sorting Times (ms)</h2>
-          <p className="description">
+        <>
+          <Typography variant="h5">
+            Average Sorting Times (ms)
+          </Typography>
+          <Typography variant="body1">
             The results represent the average sorting times (in milliseconds) of
             "100" arrays, each containing "100" randomly generated numbers.
-          </p>
+          </Typography>
           <DataGrid
             idProperty="sortingType"
             columns={averageSortingColumns}
             dataSource={averageSortingTimes}
             style={gridStyle}
             className="custom-data-grid"
+            
           />
-        </div>
+        </>
       )}
       <Divider variant="middle" />
       <ButtonGroup
