@@ -43,44 +43,24 @@
   height: 60vh;
 }
 
-/* Dizi çubukları */
 .array-bar {
-  background: linear-gradient(to bottom, #000000, #888888); 
-  width: 2%; 
-  border-radius: 5px;
-  margin: 0 1px; 
+  background: linear-gradient(to bottom, #1976D2, #BBDEFB);
+  width: 2%;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  margin: 0 1px;
   text-align: center;
   position: relative;
 }
 
-/* Çubuk etiketleri (sayılar) */
+
 .array-bar-label {
   position: absolute;
-  top: -25px; /* Etiketlerin yüksekliğini artırdık */
+  bottom: -25px;
   left: 0;
   right: 0;
   text-align: center;
-  font-size: 0.7rem; /* Font boyutunu artırdık */
-  color: #000000; /* Yazı rengini beyaza değiştirdik */
+  font-size: 0.7rem;
+  color: #000000;
 }
 
-
-.generate-button {
-  background-color: #007bff;
-  color: #fff;
-  font-size: 16px;
-  padding: 10px 20px;
-  margin: auto;
-  border: none;
-  cursor: pointer;
-}
-
-.sub-heading {
-  font-size: 20px;
-  margin: 20px 0;
-}
-
-.description {
-  font-size: 16px;
-  margin: 10px 0;
-}
