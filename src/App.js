@@ -1,14 +1,91 @@
 import React, { useState } from "react";
 import _ from "lodash";
+import Modal from "react-modal";
+import mergeSortVisualization from "./mergeSortVisualization";
+import heapSortVisualization from "./heapSortVisualization";
+import bubbleSortVisualization from "./bubbleSortVisualization";
+import quickSortVisualization from "./quickSortVisualization";
 import DataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import "./App.css";
+import selectionSortVisualization from "./selectionSortVisualization";
 
 function App() {
   // eslint-disable-next-line
   const [sortingTimes, setSortingTimes] = useState([]);
   const [averageSortingTime, setAverageSortingTime] = useState(null);
+  const [showMergeSortModal, setShowMergeSortModal] = useState(false);
+  const [showHeapSortModal, setShowHeapSortModal] = useState(false);
+  const [showBubbleSortModal, setShowBubbleSortModal] = useState(false);
+  const [showSelectionSortModal, setShowSelectionSortModal] = useState(false);
+  const [showQuickSortModal, setShowQuickSortModal] = useState(false);
+  const [mergeSortArray, setMergeSortArray] = useState([]);
+  const [heapSortArray, setHeapSortArray] = useState([]);
+  const [bubbleSortArray, setBubbleSortArray] = useState([]);
+  const [selectionSortArray, setSelectionSortArray] = useState([]);
+  const [quickSortArray, setQuickSortArray] = useState([]);
+  // eslint-disable-next-line
+  const [isSorting, setIsSorting] = useState(false);
   const gridStyle = { minHeight: 550 };
+
+  const startHeapSortVisualization = () => {
+    setShowHeapSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    heapSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setHeapSortArray(sortedArray);
+    });
+  };
+
+  const startBubbleSortVisualization = () => {
+    setShowBubbleSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    bubbleSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setBubbleSortArray(sortedArray);
+    });
+  };
+
+  const startMergeSortVisualization = () => {
+    setShowMergeSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    mergeSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setMergeSortArray(sortedArray);
+    });
+  };
+
+  const startSelectionSortVisualization = () => {
+    setShowSelectionSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    selectionSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setSelectionSortArray(sortedArray);
+    });
+  };
+
+  const startQuickSortVisualization = () => {
+    setShowQuickSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    quickSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setQuickSortArray(sortedArray);
+    });
+  };
+
+  const generateRandomArray = () => {
+    const array = Array.from(
+      { length: 100 },
+      () => Math.floor(Math.random() * 100) + 1
+    );
+    return _.shuffle(array);
+  };
+
   const generateRandomArrays = () => {
     // first value is how many arrays we test, second is array length.
     const arrays = Array.from({ length: 100 }, () =>
@@ -703,7 +780,24 @@ function App() {
     <div className="App">
       <h1 className="main-heading">Sorting Algorithms Visualization</h1>
       <button className="generate-button" onClick={generateRandomArrays}>
-        Generate Random Arrays
+        Test Sort Algorithms
+      </button>
+      <br />
+      <br />
+      <button className="generate-button" onClick={startMergeSortVisualization}>
+        Merge Sort Visualization
+      </button>
+      <button className="generate-button" onClick={startHeapSortVisualization}>
+        Heap Sort Visualization
+      </button>
+      <button className="generate-button" onClick={startBubbleSortVisualization}>
+        Bubble Sort Visualization
+      </button>
+      <button className="generate-button" onClick={startSelectionSortVisualization}>
+        Selection Sort Visualization
+      </button>
+      <button className="generate-button" onClick={startQuickSortVisualization}>
+        Quick Sort Visualization
       </button>
       {averageSortingTime !== null && (
         <div>
@@ -721,6 +815,8 @@ function App() {
           />
         </div>
       )}
+      <br />
+      <br />
       <button
         className="generate-button"
         color="info"
@@ -742,6 +838,95 @@ function App() {
       >
         Instagram
       </button>
+      <Modal
+        isOpen={showMergeSortModal}
+        onRequestClose={() => setShowMergeSortModal(false)}
+        contentLabel="Merge Sort Visualization"
+      >
+        <div className="array-visualization">
+          {mergeSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+      {/* Heap Sort Modal */}
+      <Modal
+        isOpen={showHeapSortModal}
+        onRequestClose={() => setShowHeapSortModal(false)}
+        contentLabel="Heap Sort Visualization"
+      >
+        <div className="array-visualization">
+          {heapSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showBubbleSortModal}
+        onRequestClose={() => setShowBubbleSortModal(false)}
+        contentLabel="Bubble Sort Visualization"
+      >
+        <div className="array-visualization">
+          {bubbleSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showSelectionSortModal}
+        onRequestClose={() => setShowSelectionSortModal(false)}
+        contentLabel="Selection Sort Visualization"
+      >
+        <div className="array-visualization">
+          {selectionSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showQuickSortModal}
+        onRequestClose={() => setShowQuickSortModal(false)}
+        contentLabel="Quick Sort Visualization"
+      >
+        <div className="array-visualization">
+          {quickSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
       {/* Will implement search and other components */}
     </div>
   );

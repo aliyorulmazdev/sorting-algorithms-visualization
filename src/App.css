@@ -13,6 +13,63 @@
   margin: 0 auto;
 }
 
+/* mergeSortVisualizationModal.css veya istediğiniz bir CSS dosyasına ekleyebilirsiniz */
+
+/* Modal */
+.react-modal {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #fff;
+  width: 80%;
+  max-width: 800px;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* Modal başlık */
+.sub-heading {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+/* Dizi görselleştirme alanı */
+.array-visualization {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+/* Dizi çubukları */
+.array-bar {
+  background: #000;
+  width: 20px;
+  margin: 0 2px;
+  text-align: center;
+  color: #fff;
+  position: relative;
+}
+
+/* Çubuk etiketleri (sayılar) */
+.array-bar-label {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: #000;
+}
+
+/* Sıralama sırasında çubukların stili */
+.sorting {
+  background: #f00; /* Sıralama sırasında rengi değiştirin */
+  transition: background-color 0.2s;
+}
+
+
 .generate-button {
   background-color: #007bff;
   color: #fff;
