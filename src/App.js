@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import _ from "lodash";
 import Modal from "react-modal";
 import mergeSortVisualization from "./mergeSortVisualization";
@@ -9,6 +9,8 @@ import DataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import "./App.css";
 import selectionSortVisualization from "./selectionSortVisualization";
+import { Button, ButtonGroup, Divider, Typography } from "@mui/material";
+import SpeedIcon from "@mui/icons-material/Speed";
 
 function App() {
   // eslint-disable-next-line
@@ -204,6 +206,11 @@ function App() {
       strandSort: averageStrandSortTime,
     });
   };
+
+  useEffect(() => {
+    generateRandomArrays();
+    // eslint-disable-next-line
+  }, []);
 
   const permutationSort = (arr) => {
     const startTime = new Date().getTime();
@@ -779,26 +786,34 @@ function App() {
   return (
     <div className="App">
       <h1 className="main-heading">Sorting Algorithms Visualization</h1>
-      <button className="generate-button" onClick={generateRandomArrays}>
-        Test Sort Algorithms
-      </button>
-      <br />
-      <br />
-      <button className="generate-button" onClick={startMergeSortVisualization}>
-        Merge Sort Visualization
-      </button>
-      <button className="generate-button" onClick={startHeapSortVisualization}>
-        Heap Sort Visualization
-      </button>
-      <button className="generate-button" onClick={startBubbleSortVisualization}>
-        Bubble Sort Visualization
-      </button>
-      <button className="generate-button" onClick={startSelectionSortVisualization}>
-        Selection Sort Visualization
-      </button>
-      <button className="generate-button" onClick={startQuickSortVisualization}>
-        Quick Sort Visualization
-      </button>
+      <ButtonGroup variant="text" aria-label="text button group">
+        <Button onClick={generateRandomArrays} startIcon={<SpeedIcon />}>
+          reTest Sort Algorithms
+        </Button>
+      </ButtonGroup>
+      <Divider variant="middle" />
+      <ButtonGroup
+        variant="text"
+        color="secondary"
+        aria-label="text button group"
+        style={{ marginTop: "10px" }}
+      >
+        <Button onClick={startMergeSortVisualization}>
+          Merge Sort Visualization
+        </Button>
+        <Button onClick={startHeapSortVisualization}>
+          Heap Sort Visualization
+        </Button>
+        <Button onClick={startBubbleSortVisualization}>
+          Bubble Sort Visualization
+        </Button>
+        <Button onClick={startSelectionSortVisualization}>
+          Selection Sort Visualization
+        </Button>
+        <Button onClick={startQuickSortVisualization}>
+          Quick Sort Visualization
+        </Button>
+      </ButtonGroup>
       {averageSortingTime !== null && (
         <div>
           <h2 className="sub-heading">Average Sorting Times (ms)</h2>
@@ -815,34 +830,51 @@ function App() {
           />
         </div>
       )}
-      <br />
-      <br />
-      <button
-        className="generate-button"
-        color="info"
-        onClick={() =>
-          window.open("https://www.linkedin.com/in/ali-yorulmaz-1a67a518a/")
-        }
+      <Divider variant="middle" />
+      <ButtonGroup
+        variant="text"
+        aria-label="text button group"
+        style={{ marginTop: "10px" }}
       >
-        LinkedIn
-      </button>
-      <button
-        className="generate-button"
-        onClick={() => window.open("https://github.com/aliyorulmazdev")}
-      >
-        GitHub
-      </button>
-      <button
-        className="generate-button"
-        onClick={() => window.open("https://instagram.com/kuprag_ali")}
-      >
-        Instagram
-      </button>
+        <Button
+          color="info"
+          onClick={() =>
+            window.open("https://www.linkedin.com/in/ali-yorulmaz-1a67a518a/")
+          }
+        >
+          LinkedIn
+        </Button>
+        <Button
+          onClick={() => window.open("https://github.com/aliyorulmazdev")}
+        >
+          GitHub
+        </Button>
+        <Button onClick={() => window.open("https://instagram.com/kuprag_ali")}>
+          Instagram
+        </Button>
+      </ButtonGroup>
       <Modal
         isOpen={showMergeSortModal}
         onRequestClose={() => setShowMergeSortModal(false)}
         contentLabel="Merge Sort Visualization"
       >
+        <Typography variant="h3">What is Merge Sort:</Typography>
+        <Typography variant="body1">
+          Merge Sort is another widely used "divide and conquer" algorithm among
+          sorting algorithms. This algorithm relies on the logic of breaking a
+          given array into smaller sub-arrays and then merging these sub-arrays
+          in a sorted manner. The basic operation of Merge Sort involves the
+          following steps: First, the input array is divided into two equal
+          parts. Each of the two sub-arrays is sorted using the same Merge Sort
+          algorithm. Then, in the merging step, these two sorted sub-arrays are
+          combined into a single sorted array. An important advantage of Merge
+          Sort is its time complexity of O(n * log(n)), making it a fast sorting
+          algorithm. Additionally, Merge Sort ensures reliable sorting in any
+          situation. It is a stable sorting algorithm that performs excellently
+          on large data sets. Moreover, this algorithm is preferred in
+          applications that require external memory sorting or parallel sorting.
+        </Typography>
+
         <div className="array-visualization">
           {mergeSortArray.map((value, index) => (
             <div
@@ -861,6 +893,26 @@ function App() {
         onRequestClose={() => setShowHeapSortModal(false)}
         contentLabel="Heap Sort Visualization"
       >
+        <Typography variant="h3">What is Heapsort:</Typography>
+        <Typography variant="body1">
+          Heapsort is an efficient sorting algorithm with a constant amount of
+          additional memory usage. This algorithm operates using a "heapify"
+          process and requires very little extra memory during the sorting
+          process. The basic operation of Heapsort involves the following steps:
+          Firstly, the input array is transformed into a sorted binary heap data
+          structure. This heap structure holds the largest or smallest element
+          at the root node. Next, the root element is removed and placed at the
+          end of the sorted array. This process is repeated by reducing the size
+          of the array from the end. When this process is complete, the entire
+          array is sorted. Heapsort is a fast sorting algorithm with a time
+          complexity of O(n * log(n)). Its advantage also lies in its constant
+          memory usage, which can be beneficial, particularly in systems with
+          limited memory or embedded systems. Heapsort is typically considered
+          an in-place sorting algorithm and is stable. Therefore, it is a
+          preferred choice for applications that require sorting large datasets
+          or involve external memory usage.
+        </Typography>
+
         <div className="array-visualization">
           {heapSortArray.map((value, index) => (
             <div
@@ -879,6 +931,25 @@ function App() {
         onRequestClose={() => setShowBubbleSortModal(false)}
         contentLabel="Bubble Sort Visualization"
       >
+        <Typography variant="h3">What is Bubble Sort:</Typography>
+        <Typography variant="body1">
+          Bubble Sort is one of the simplest sorting algorithms among sorting
+          algorithms. Its basic idea is to traverse an array by comparing
+          consecutive elements and arranging them in order. If two consecutive
+          elements are out of order, they swap places, and the process is
+          repeated until the end of the array. Bubble Sort gets its name because
+          in each pass, the largest element "bubbles up" to the end of the
+          array. With each pass, the largest unsorted element moves to its
+          correct position. However, Bubble Sort has a time complexity of O(n^2)
+          in the best, worst, and average cases, making it inefficient for large
+          datasets. Other sorting algorithms provide faster results.
+          Nevertheless, Bubble Sort can be useful for educational purposes or
+          when sorting small datasets. It can also perform better in cases where
+          the array is nearly sorted. Bubble Sort is a stable sorting algorithm
+          that performs in-place sorting, meaning it uses minimal additional
+          memory and doesn't change the original data.
+        </Typography>
+
         <div className="array-visualization">
           {bubbleSortArray.map((value, index) => (
             <div
@@ -897,6 +968,24 @@ function App() {
         onRequestClose={() => setShowSelectionSortModal(false)}
         contentLabel="Selection Sort Visualization"
       >
+        <Typography variant="h3">What is Selection Sort:</Typography>
+        <Typography variant="body1">
+          Selection Sort is a simple and efficient sorting algorithm among
+          sorting algorithms. Its fundamental idea is to traverse an array by
+          comparing consecutive elements and selecting the smallest (or largest)
+          element to move it to the beginning of the array. In each pass, it
+          finds the smallest (or largest) element in the array and swaps it with
+          the element at the beginning of the array. This process continues from
+          the beginning to the end of the array, and the sorted portion of the
+          array gradually increases. Selection Sort has a time complexity of
+          O(n^2) in the best, worst, and average cases, making it inefficient
+          for large datasets. However, it uses minimal additional memory and
+          performs an in-place sort. Selection Sort is suitable for relatively
+          small datasets or for educational purposes when learning about sorting
+          algorithms. For large datasets, faster sorting algorithms are
+          preferred.
+        </Typography>
+
         <div className="array-visualization">
           {selectionSortArray.map((value, index) => (
             <div
@@ -915,6 +1004,30 @@ function App() {
         onRequestClose={() => setShowQuickSortModal(false)}
         contentLabel="Quick Sort Visualization"
       >
+        <Typography variant="h3">What is Quick Sort:</Typography>
+        <Typography variant="body1">
+          Quick Sort is a fast and efficient sorting algorithm that is widely
+          used. This algorithm is based on the "divide and conquer" strategy.
+          Quick Sort sorts an array by dividing it. During the process, a pivot
+          element is selected, and on its left, you gather all elements smaller
+          than the pivot element, while on its right, you gather all elements
+          greater than the pivot element. The basic operation of Quick Sort
+          follows these steps: First, a pivot element is selected, determining
+          which element of the array will serve as the pivot. Elements smaller
+          than the pivot are collected on its left, and elements greater than
+          the pivot are collected on its right. Sorting is applied recursively
+          to these two sub-arrays. In other words, these sub-arrays also select
+          and divide with a pivot element in the same way. Once the sub-arrays
+          are sorted, they are merged to complete the process. Quick Sort is
+          generally considered a fast sorting algorithm because it has a time
+          complexity of n*log(n) even in the worst-case scenario. However, the
+          performance can be influenced by the choice of the pivot element,
+          which is essential to achieve the best results. Quick Sort is
+          available in many programming languages and is included in various
+          sorting libraries. It can be an ideal choice for quickly sorting large
+          datasets.
+        </Typography>
+
         <div className="array-visualization">
           {quickSortArray.map((value, index) => (
             <div

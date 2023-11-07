@@ -40,33 +40,28 @@
   display: flex;
   justify-content: center;
   align-items: flex-end;
+  height: 60vh;
 }
 
 /* Dizi çubukları */
 .array-bar {
-  background: #000;
-  width: 20px;
-  margin: 0 2px;
+  background: linear-gradient(to bottom, #000000, #888888); 
+  width: 2%; 
+  border-radius: 5px;
+  margin: 0 1px; 
   text-align: center;
-  color: #fff;
   position: relative;
 }
 
 /* Çubuk etiketleri (sayılar) */
 .array-bar-label {
   position: absolute;
-  top: -20px;
+  top: -25px; /* Etiketlerin yüksekliğini artırdık */
   left: 0;
   right: 0;
   text-align: center;
-  font-size: 0.8rem;
-  color: #000;
-}
-
-/* Sıralama sırasında çubukların stili */
-.sorting {
-  background: #f00; /* Sıralama sırasında rengi değiştirin */
-  transition: background-color 0.2s;
+  font-size: 0.7rem; /* Font boyutunu artırdık */
+  color: #000000; /* Yazı rengini beyaza değiştirdik */
 }
 
 
