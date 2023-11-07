@@ -25,7 +25,7 @@ import MemoryIcon from "@mui/icons-material/Memory";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import FastForwardIcon from "@mui/icons-material/FastForward";
-import { blue, deepOrange, deepPurple } from "@mui/material/colors";
+import { blue } from "@mui/material/colors";
 
 function App() {
   // eslint-disable-next-line
