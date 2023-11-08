@@ -36,45 +36,116 @@
 }
 
 
+
+
+.modal-close-button {
+  background-color: #f44336; /* Material-UI'nin hata rengi */
+  color: white;
+  padding: 10px 20px;
+  cursor: pointer;
+  z-index: 10;
+  border: none;
+  border-radius: 4px; /* Yuvarlak köşeler */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hafif bir gölge efekti */
+  transition: all 0.3s; /* Animasyon için geçiş efekti */
+  
+  /* Sabit pozisyon için varsayılan stiller */
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+}
+
+/* Daha küçük ekranlar için stil */
+@media (max-width: 600px) {
+  .modal-close-button {
+    padding: 8px 16px;
+    top: 10px;
+    right: 10px;
+    font-size: 0.8rem; /* Daha küçük cihazlar için metin boyutu */
+  }
+}
+
+/* Orta büyüklükte ekranlar için stil */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .modal-close-button {
+    top: 20px;
+    right: 20px;
+    font-size: 0.9rem; /* Orta büyüklükte ekranlar için metin boyutu */
+  }
+}
+
+/* Hover efekti */
+.modal-close-button:hover {
+  background-color: #d32f2f; /* Rengi koyulaştır */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Gölgelendirmeyi artır */
+  transform: scale(1.05); /* Hafifçe büyüt */
+}
+
 /* Dizi görselleştirme alanı */
 .array-visualization {
   display: flex;
   justify-content: center;
   align-items: flex-end;
-  height: 60vh;
+  height: 45vh;
+  padding: 0 10px; /* İç boşluk sağlar */
+  margin: auto;
+  overflow-x: auto; /* Yatay kaydırma için */
+  overflow-y: hidden; /* Dikey taşmayı engeller */
 }
 
-.modal-close-button {
-  position: fixed;
-  top: 70px;
-  right: 70px;
-  background-color: #f44336; /* Material-UI'nin failure rengi */
-  color: #fff;
-  padding: 10px 20px;
-  cursor: pointer;
-  z-index: 999;
-}
-
-
-
-
+/* Her bir dizi çubuğu */
 .array-bar {
-  background: linear-gradient(to bottom, #1976D2, #BBDEFB);
-  width: 2%;
+  background: linear-gradient(to top, #1976D2, #BBDEFB); /* Gradyanı daha estetik yap */
+  width: 2%; /* Başlangıç genişliği */
+  min-width: 4px; /* Çok dar ekranlarda çubuklar için minimum genişlik */
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
-  margin: 0 1px;
+  margin: 0 0.1%; /* Marjları küçült */
   text-align: center;
   position: relative;
+  transition: all 0.1s ease-in-out; /* Yumuşak geçiş animasyonları */
 }
 
+/* Dizi çubuğu etiketleri */
 .array-bar-label {
   position: absolute;
-  bottom: -25px;
-  left: 0;
-  right: 0;
+  bottom: 0%; /* Etiketleri çubuğun altına yerleştir */
+  left: 50%;
+  transform: translateX(-50%); /* Merkezleme */
   text-align: center;
   font-size: 0.7rem;
-  color: #000000;
+  color: #ffffff;
+  white-space: nowrap; /* Taşma önleme */
+  overflow: hidden; /* Taşan içeriği gizle */
+  text-overflow: ellipsis; /* Taşan içeriği üç nokta ile göster */
+  transition: all 0.3s ease-in-out; /* Yumuşak geçiş animasyonları */
+  opacity: 0.5;
+}
+
+/* Küçük ekranlar için medya sorgusu */
+@media (max-width: 600px) {
+  .array-bar {
+    width: 4%; /* Mobil cihazlarda çubuk genişliğini artır */
+    margin: 0 0.2%; /* Mobil cihazlarda marjı artır */
+  }
+  .array-bar-label {
+    font-size: 0; /* Mobil cihazlarda etiketleri gizle */
+    bottom: -20px; /* Etiketin pozisyonunu ayarla */
+  }
+  .array-visualization {
+    height: 60vh; /* Mobil cihazlarda yüksekliği artır */
+  }
+}
+
+/* Tablet ekranları için medya sorgusu */
+@media (min-width: 601px) and (max-width: 1024px) {
+  .array-bar {
+    width: 3%; /* Tablet ekranlar için genişlik */
+    margin: 0 0.15%; /* Tablet ekranlar için marj */
+  }
+  .array-bar-label {
+    font-size: 0.6rem; /* Tablet ekranlar için etiket boyutunu küçült */
+    bottom: -10px; /* Etiketin pozisyonunu yukarı çek */
+  }
 }
 

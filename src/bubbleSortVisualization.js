@@ -2,19 +2,26 @@ const bubbleSortVisualization = async (arr, callback) => {
   const animations = [];
   const n = arr.length;
 
+  // Düzensiz bir diziyi oluştur
+  const unsortedArray = [...arr];
+  for (let i = n - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [unsortedArray[i], unsortedArray[j]] = [unsortedArray[j], unsortedArray[i]];
+  }
+
   for (let i = 0; i < n - 1; i++) {
     for (let j = 0; j < n - i - 1; j++) {
       // Visualize comparison step
       animations.push({ type: "comparison", indices: [j, j + 1] });
 
-      if (arr[j] > arr[j + 1]) {
+      if (unsortedArray[j] > unsortedArray[j + 1]) {
         // Swap elements
-        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+        [unsortedArray[j], unsortedArray[j + 1]] = [unsortedArray[j + 1], unsortedArray[j]];
         // Visualize swap/overwrite step
         animations.push({
           type: "swap",
           indices: [j, j + 1],
-          values: [arr[j], arr[j + 1]],
+          values: [unsortedArray[j], unsortedArray[j + 1]],
         });
       }
     }
@@ -40,7 +47,7 @@ const bubbleSortVisualization = async (arr, callback) => {
 
       // Introduce a delay here to control the animation speed
       // You can use async/await or setTimeout
-      await new Promise((resolve) => setTimeout(resolve, 5)); // Adjust the delay time as needed
+      await new Promise((resolve) => setTimeout(resolve, 3)); // Adjust the delay time as needed
     }
   }
 

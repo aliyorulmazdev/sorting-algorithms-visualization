@@ -1,5 +1,10 @@
 const mergeSortVisualization = async (arr, callback) => {
   const animations = [];
+  const shuffledArr = [...arr];
+  for (let i = shuffledArr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArr[i], shuffledArr[j]] = [shuffledArr[j], shuffledArr[i]];
+  }
 
   const merge = (arr, left, middle, right) => {
     const n1 = middle - left + 1;
@@ -66,32 +71,22 @@ const mergeSortVisualization = async (arr, callback) => {
     merge(arr, left, middle, right);
   };
 
-  mergeSort(arr, 0, arr.length - 1);
-
+  mergeSort(shuffledArr, 0, shuffledArr.length - 1);
   for (const animation of animations) {
-    if (animation.type === "comparison") {
-      // Visualize comparison step
-      // Highlight compared elements (e.g., change their color)
-      // eslint-disable-next-line
-      const [index] = animation.indices;
-      // You can change the appearance of the bar for comparison (e.g., change color)
-      // Use the callback function to update the state in the main component
-      callback([...arr]);
-    } else if (animation.type === "overwrite") {
-      // Visualize overwrite step
-      arr[animation.index] = animation.value; // Access properties directly
-      // Update the array values visually (e.g., adjust the bar heights)
-      // Use the callback function to update the state in the main component
-      callback([...arr]);
-
-      // Introduce a delay here to control the animation speed
-      // You can use async/await or setTimeout
-      await new Promise((resolve) => setTimeout(resolve, 5)); // Adjust the delay time as needed
+    const { type, indices, index, value } = animation;
+  
+    if (type === "comparison") {
+      const comparisonColor = `hsl(0, 100%, 50%)`; // Karşılaştırma için kırmızı
+      callback([...arr], { comparisonIndices: indices, comparisonColor: comparisonColor });
+    } else if (type === "overwrite") {
+      arr[index] = value;
+      const color = `hsl(240, 100%, 50%)`; // Mavi tonları kullan
+      callback([...arr], { overwriteIndex: index, color: color });
+      await new Promise((resolve) => setTimeout(resolve, 10));
     }
   }
 
-  // Notify that the sorting is completed
-  callback([...arr]);
+  callback([...arr], { sorted: true });
 };
 
 export default mergeSortVisualization;

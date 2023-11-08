@@ -5,6 +5,7 @@ import mergeSortVisualization from "./mergeSortVisualization";
 import heapSortVisualization from "./heapSortVisualization";
 import bubbleSortVisualization from "./bubbleSortVisualization";
 import quickSortVisualization from "./quickSortVisualization";
+import Grid from "@mui/material/Grid";
 import DataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import "./App.css";
@@ -28,6 +29,8 @@ import {
   Divider,
   IconButton,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import SpeedIcon from "@mui/icons-material/Speed";
 import MergeIcon from "@mui/icons-material/Merge";
@@ -936,6 +939,14 @@ function App() {
     { name: "sortingType", header: "Sorting Type", defaultFlex: 1 },
     { name: "time", header: "Time (ms)", defaultFlex: 1 },
   ];
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const maxValue = Math.max(...mergeSortArray);
+  const minValue = Math.min(...mergeSortArray);
+  const maxValueHeap = Math.max(...heapSortArray);
+  const minValueHeap = Math.min(...heapSortArray);
+  const maxValueBubble = Math.max(...bubbleSortArray);
+  const minValueBubble = Math.min(...bubbleSortArray);
 
   return (
     <div className="App">
@@ -952,122 +963,128 @@ function App() {
         </Button>
       </ButtonGroup>
       <Divider variant="middle" />
-      <div>
-        <ButtonGroup
-          variant="text"
-          color="secondary"
-          aria-label="text button group"
-          style={{ marginTop: "10px" }}
-        >
-          <Button
-            onClick={startMergeSortVisualization}
-            startIcon={<MergeIcon />}
+      <Grid container spacing={isMobile ? 1 : 2}>
+        <Grid item xs={12}>
+          <ButtonGroup
+            variant="text"
+            color="secondary"
+            aria-label="text button group"
+            fullWidth={isMobile}
+            orientation={isMobile ? "vertical" : "horizontal"}
           >
-            Merge Sort Visualization
-          </Button>
-          <Button
-            onClick={startHeapSortVisualization}
-            startIcon={<MemoryIcon />}
-          >
-            Heap Sort Visualization
-          </Button>
-          <Button
-            onClick={startBubbleSortVisualization}
-            startIcon={<BubbleChartIcon />}
-          >
-            Bubble Sort Visualization
-          </Button>
-          <Button
-            onClick={startSelectionSortVisualization}
-            startIcon={<SelectAllIcon />}
-          >
-            Selection Sort Visualization
-          </Button>
-          <Button
-            onClick={startQuickSortVisualization}
-            startIcon={<FastForwardIcon />}
-          >
-            Quick Sort Visualization
-          </Button>
-        </ButtonGroup>
-      </div>
-      <div>
-        <ButtonGroup
-          variant="text"
-          color="secondary"
-          aria-label="text button group"
-          style={{ marginTop: "10px" }}
-        >
-          <Button
-            onClick={startCountingSortVisualization}
-            startIcon={<LooksOneIcon />}
-            disabled
-          >
-            Counting Sort Visualization
-          </Button>
-          <Button
-            onClick={startRadixSortVisualization}
-            startIcon={<ArrowUpwardIcon />}
-          >
-            Radix Sort Visualization
-          </Button>
-          <Button
-            onClick={startInsertionSortVisualization}
-            startIcon={<DoubleArrowIcon />}
-          >
-            Insertion Sort Visualization
-          </Button>
-          <Button
-            onClick={startShakerSortVisualization}
-            startIcon={<ShuffleOnIcon />}
-          >
-            Shaker Sort Visualization
-          </Button>
-          <Button
-            onClick={startShellSortVisualization}
-            startIcon={<TerminalIcon />}
-          >
-            Shell Sort Visualization
-          </Button>
-        </ButtonGroup>
-      </div>
+            <Button
+              onClick={startMergeSortVisualization}
+              startIcon={<MergeIcon />}
+            >
+              Merge Sort Visualization
+            </Button>
+            <Button
+              onClick={startHeapSortVisualization}
+              startIcon={<MemoryIcon />}
+            >
+              Heap Sort Visualization
+            </Button>
+            <Button
+              onClick={startBubbleSortVisualization}
+              startIcon={<BubbleChartIcon />}
+            >
+              Bubble Sort Visualization
+            </Button>
+            <Button
+              onClick={startSelectionSortVisualization}
+              startIcon={<SelectAllIcon />}
+            >
+              Selection Sort Visualization
+            </Button>
+            <Button
+              onClick={startQuickSortVisualization}
+              startIcon={<FastForwardIcon />}
+            >
+              Quick Sort Visualization
+            </Button>
+          </ButtonGroup>
+        </Grid>
 
-      <div>
-        <ButtonGroup
-          variant="text"
-          color="secondary"
-          aria-label="text button group"
-          style={{ marginTop: "10px" }}
-        >
-          <Button
-            onClick={startFlashSortVisualization}
-            startIcon={<OfflineBoltIcon />}
+        <Grid item xs={12}>
+          <ButtonGroup
+            variant="text"
+            color="secondary"
+            aria-label="text button group"
+            fullWidth={isMobile}
+            orientation={isMobile ? "vertical" : "horizontal"}
           >
-            Flash Sort Visualization
-          </Button>
+            <Button
+              onClick={startCountingSortVisualization}
+              startIcon={<LooksOneIcon />}
+              disabled
+            >
+              Counting Sort Visualization
+            </Button>
+            <Button
+              onClick={startRadixSortVisualization}
+              startIcon={<ArrowUpwardIcon />}
+            >
+              Radix Sort Visualization
+            </Button>
+            <Button
+              onClick={startInsertionSortVisualization}
+              startIcon={<DoubleArrowIcon />}
+            >
+              Insertion Sort Visualization
+            </Button>
+            <Button
+              onClick={startShakerSortVisualization}
+              startIcon={<ShuffleOnIcon />}
+            >
+              Shaker Sort Visualization
+            </Button>
+            <Button
+              onClick={startShellSortVisualization}
+              startIcon={<TerminalIcon />}
+            >
+              Shell Sort Visualization
+            </Button>
+          </ButtonGroup>
+        </Grid>
 
-          <Button
-            onClick={startStoogeSortVisualization}
-            startIcon={<EmojiEmotionsIcon />}
+        <Grid item xs={12}>
+          <ButtonGroup
+            variant="text"
+            color="secondary"
+            aria-label="text button group"
+            fullWidth={isMobile}
+            orientation={isMobile ? "vertical" : "horizontal"}
           >
-            Stooge Sort Visualization
-          </Button>
+            <Button
+              onClick={startFlashSortVisualization}
+              startIcon={<OfflineBoltIcon />}
+            >
+              Flash Sort Visualization
+            </Button>
 
-          <Button
-            onClick={startCombSortVisualization}
-            startIcon={<CategoryIcon />}
-          >
-            Comb Sort Visualization
-          </Button>
+            <Button
+              onClick={startStoogeSortVisualization}
+              startIcon={<EmojiEmotionsIcon />}
+            >
+              Stooge Sort Visualization
+            </Button>
 
-          <Button
-            onClick={startGnomeSortVisualization}
-            startIcon={<ViewQuiltIcon />}
-          >
-            Gnome Sort Visualization
-          </Button>
-        </ButtonGroup>
-      </div>
+            <Button
+              onClick={startCombSortVisualization}
+              startIcon={<CategoryIcon />}
+            >
+              Comb Sort Visualization
+            </Button>
+
+            <Button
+              onClick={startGnomeSortVisualization}
+              startIcon={<ViewQuiltIcon />}
+            >
+              Gnome Sort Visualization
+            </Button>
+          </ButtonGroup>
+        </Grid>
+      </Grid>
 
       <Divider
         variant="middle"
@@ -1117,16 +1134,16 @@ function App() {
         onRequestClose={() => setShowMergeSortModal(false)}
         contentLabel="Merge Sort Visualization"
       >
-        <button
-          className="modal-close-button"
-          onClick={() => {
-            setShowShakerSortModal(false);
-            window.location.reload(); // Sayfayı yenile
-          }}
-        >
-          Close
-        </button>
         <Card>
+          <button
+            className="modal-close-button"
+            onClick={() => {
+              setShowShakerSortModal(false);
+              window.location.reload(); // Sayfayı yenile
+            }}
+          >
+            Close
+          </button>
           <CardHeader
             title="What is Merge Sort"
             avatar={
@@ -1171,15 +1188,34 @@ function App() {
           </CardContent>
         </Card>
         <div className="array-visualization">
-          {mergeSortArray.map((value, index) => (
-            <div
-              key={index}
-              className="array-bar"
-              style={{ height: `${value * 3}px` }}
-            >
-              <div className="array-bar-label">{value}</div>
-            </div>
-          ))}
+          {mergeSortArray.map((value, index) => {
+            // Yükseklik değerini hesapla
+            const height = value * 2;
+            // Renk yoğunluğunu hesapla
+            const colorIntensity =
+              ((value - minValue) / (maxValue - minValue)) * 120;
+            // Renk değerini HSL formatında oluştur
+            const color = `hsl(${120 - colorIntensity}, 100%, 50%)`;
+
+
+            return (
+              <div
+                key={index}
+                className="array-bar"
+                style={{
+                  height: `${height}px`,
+                  background: color, // Renk değerini burada kullan
+                }}
+              >
+                <div
+                  className="array-bar-label"
+                  style={{ color: height > 20 ? "white" : "black" }}
+                >
+                  {value}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </Modal>
       {/* Heap Sort Modal */}
@@ -1243,17 +1279,35 @@ function App() {
             </Typography>
           </CardContent>
         </Card>
-
         <div className="array-visualization">
-          {heapSortArray.map((value, index) => (
-            <div
-              key={index}
-              className="array-bar"
-              style={{ height: `${value * 3}px` }}
-            >
-              <div className="array-bar-label">{value}</div>
-            </div>
-          ))}
+          {heapSortArray.map((value, index) => {
+            // Yükseklik değerini hesapla
+            const height = value * 2;
+            // Renk yoğunluğunu hesapla
+            const colorIntensity =
+              ((value - minValueHeap) / (maxValueHeap - minValueHeap)) * 120;
+            // Renk değerini HSL formatında oluştur
+            const color = `hsl(${120 - colorIntensity}, 100%, 50%)`;
+
+
+            return (
+              <div
+                key={index}
+                className="array-bar"
+                style={{
+                  height: `${height}px`,
+                  background: color, // Renk değerini burada kullan
+                }}
+              >
+                <div
+                  className="array-bar-label"
+                  style={{ color: height > 20 ? "white" : "black" }}
+                >
+                  {value}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </Modal>
 
@@ -1318,15 +1372,33 @@ function App() {
         </Card>
 
         <div className="array-visualization">
-          {bubbleSortArray.map((value, index) => (
-            <div
-              key={index}
-              className="array-bar"
-              style={{ height: `${value * 3}px` }}
-            >
-              <div className="array-bar-label">{value}</div>
-            </div>
-          ))}
+          {bubbleSortArray.map((value, index) => {
+            // Yükseklik değerini hesapla
+            const height = value * 2;
+            // Renk yoğunluğunu hesapla
+            const colorIntensity =
+              ((value - minValueBubble) / (maxValueBubble - minValueBubble)) * 120;
+            // Renk değerini HSL formatında oluştur
+            const color = `hsl(${120 - colorIntensity}, 100%, 50%)`;
+
+            return (
+              <div
+                key={index}
+                className="array-bar"
+                style={{
+                  height: `${height}px`,
+                  background: color, // Renk değerini burada kullan
+                }}
+              >
+                <div
+                  className="array-bar-label"
+                  style={{ color: height > 20 ? "white" : "black" }}
+                >
+                  {value}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </Modal>
 

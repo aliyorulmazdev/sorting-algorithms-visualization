@@ -1,6 +1,12 @@
 const heapSortVisualization = async (arr, callback) => {
   const animations = [];
 
+  const shuffledArr = [...arr];
+  for (let i = shuffledArr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shuffledArr[i], shuffledArr[j]] = [shuffledArr[j], shuffledArr[i]];
+  }
+
   const heapify = (arr, n, i) => {
     let largest = i;
     const left = 2 * i + 1;
@@ -47,7 +53,7 @@ const heapSortVisualization = async (arr, callback) => {
     }
   };
 
-  heapSort(arr);
+  heapSort(shuffledArr);
 
   for (const animation of animations) {
     if (animation.type === "comparison") {
