@@ -26,23 +26,26 @@ import {
   CardContent,
   CardHeader,
   Divider,
+  IconButton,
   Typography,
 } from "@mui/material";
 import SpeedIcon from "@mui/icons-material/Speed";
 import MergeIcon from "@mui/icons-material/Merge";
 import MemoryIcon from "@mui/icons-material/Memory";
-import LooksOneIcon from '@mui/icons-material/LooksOne';
-import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
-import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
-import ShuffleOnIcon from '@mui/icons-material/ShuffleOn';
-import TerminalIcon from '@mui/icons-material/Terminal';
-import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
-import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
-import CategoryIcon from '@mui/icons-material/Category';
-import ViewQuiltIcon from '@mui/icons-material/ViewQuilt';
+import LooksOneIcon from "@mui/icons-material/LooksOne";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
+import ShuffleOnIcon from "@mui/icons-material/ShuffleOn";
+import TerminalIcon from "@mui/icons-material/Terminal";
+import OfflineBoltIcon from "@mui/icons-material/OfflineBolt";
+import EmojiEmotionsIcon from "@mui/icons-material/EmojiEmotions";
+import CategoryIcon from "@mui/icons-material/Category";
+import ViewQuiltIcon from "@mui/icons-material/ViewQuilt";
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import FastForwardIcon from "@mui/icons-material/FastForward";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import PauseIcon from "@mui/icons-material/Pause";
 import { blue } from "@mui/material/colors";
 
 function App() {
@@ -859,6 +862,90 @@ function App() {
     return mergedList;
   };
 
+  function playAudio() {
+    const audio = document.getElementById("mergeSortAudio");
+    if (audio) {
+      audio.play();
+    }
+  }
+
+  function pauseAudio() {
+    const audio = document.getElementById("mergeSortAudio");
+    if (audio) {
+      audio.pause();
+    }
+  }
+
+  function playAudioHeap() {
+    const audio = document.getElementById("heapSortAudio");
+    if (audio) {
+      audio.play();
+    }
+  }
+
+  function pauseAudioHeap() {
+    const audio = document.getElementById("heapSortAudio");
+    if (audio) {
+      audio.pause();
+    }
+  }
+
+  function playAudioBubble() {
+    const audio = document.getElementById("bubbleSortAudio");
+    if (audio) {
+      audio.play();
+    }
+  }
+
+  function pauseAudioBubble() {
+    const audio = document.getElementById("bubbleSortAudio");
+    if (audio) {
+      audio.pause();
+    }
+  }
+
+  function playAudioSelection() {
+    const audio = document.getElementById("selectionSortAudio");
+    if (audio) {
+      audio.play();
+    }
+  }
+
+  function pauseAudioSelection() {
+    const audio = document.getElementById("selectionSortAudio");
+    if (audio) {
+      audio.pause();
+    }
+  }
+
+  function playAudioQuick() {
+    const audio = document.getElementById("quickSortAudio");
+    if (audio) {
+      audio.play();
+    }
+  }
+
+  function pauseAudioQuick() {
+    const audio = document.getElementById("quickSortAudio");
+    if (audio) {
+      audio.pause();
+    }
+  }
+
+  function playAudioRadix() {
+    const audio = document.getElementById("radixSortAudio");
+    if (audio) {
+      audio.play();
+    }
+  }
+
+  function pauseAudioRadix() {
+    const audio = document.getElementById("radixSortAudio");
+    if (audio) {
+      audio.pause();
+    }
+  }
+
   // const columns = [
   //   { name: "arrayIndex", header: "Array Index", defaultFlex: 1 },
   //   { name: "sortingTime", header: "Sorting Time (ms)", defaultFlex: 1 },
@@ -986,32 +1073,32 @@ function App() {
         >
           <Button
             onClick={startCountingSortVisualization}
-            startIcon={<LooksOneIcon  />}
+            startIcon={<LooksOneIcon />}
             disabled
           >
             Counting Sort Visualization
           </Button>
           <Button
             onClick={startRadixSortVisualization}
-            startIcon={<ArrowUpwardIcon  />}
+            startIcon={<ArrowUpwardIcon />}
           >
             Radix Sort Visualization
           </Button>
           <Button
             onClick={startInsertionSortVisualization}
-            startIcon={<DoubleArrowIcon  />}
+            startIcon={<DoubleArrowIcon />}
           >
             Insertion Sort Visualization
           </Button>
           <Button
             onClick={startShakerSortVisualization}
-            startIcon={<ShuffleOnIcon  />}
+            startIcon={<ShuffleOnIcon />}
           >
             Shaker Sort Visualization
           </Button>
           <Button
             onClick={startShellSortVisualization}
-            startIcon={<TerminalIcon  />}
+            startIcon={<TerminalIcon />}
           >
             Shell Sort Visualization
           </Button>
@@ -1027,28 +1114,28 @@ function App() {
         >
           <Button
             onClick={startFlashSortVisualization}
-            startIcon={<OfflineBoltIcon  />}
+            startIcon={<OfflineBoltIcon />}
           >
             Flash Sort Visualization
           </Button>
 
           <Button
             onClick={startStoogeSortVisualization}
-            startIcon={<EmojiEmotionsIcon   />}
+            startIcon={<EmojiEmotionsIcon />}
           >
             Stooge Sort Visualization
           </Button>
 
           <Button
             onClick={startCombSortVisualization}
-            startIcon={<CategoryIcon  />}
+            startIcon={<CategoryIcon />}
           >
             Comb Sort Visualization
           </Button>
 
           <Button
             onClick={startGnomeSortVisualization}
-            startIcon={<ViewQuiltIcon  />}
+            startIcon={<ViewQuiltIcon />}
           >
             Gnome Sort Visualization
           </Button>
@@ -1121,6 +1208,15 @@ function App() {
               </Avatar>
             }
           />
+          <audio id="mergeSortAudio" src="/mergesort.wav"></audio>
+          <div>
+            <IconButton aria-label="Play" onClick={playAudio}>
+              <PlayArrowIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+            <IconButton aria-label="Pause" onClick={pauseAudio}>
+              <PauseIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+          </div>
           <CardContent>
             <Typography variant="body2" color="text.secondary">
               Merge Sort is another widely used "divide and conquer" algorithm
@@ -1177,6 +1273,15 @@ function App() {
               </Avatar>
             }
           />
+          <audio id="heapSortAudio" src="/heapsort.wav"></audio>
+          <div>
+            <IconButton aria-label="Play" onClick={playAudioHeap}>
+              <PlayArrowIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+            <IconButton aria-label="Pause" onClick={pauseAudioHeap}>
+              <PauseIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+          </div>
           <CardContent>
             <Typography variant="body2" color="text.secondary">
               Heapsort is an efficient sorting algorithm with a constant amount
@@ -1222,7 +1327,7 @@ function App() {
           className="modal-close-button"
           onClick={() => {
             setShowShakerSortModal(false);
-            window.location.reload(); // Sayfayı yenile
+            window.location.reload();
           }}
         >
           Close
@@ -1236,6 +1341,15 @@ function App() {
               </Avatar>
             }
           />
+          <audio id="bubbleSortAudio" src="/bubblesort.wav"></audio>
+          <div>
+            <IconButton aria-label="Play" onClick={playAudioBubble}>
+              <PlayArrowIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+            <IconButton aria-label="Pause" onClick={pauseAudioBubble}>
+              <PauseIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+          </div>
           <CardContent>
             <Typography variant="body2" color="text.secondary">
               Bubble Sort is one of the simplest sorting algorithms among
@@ -1280,7 +1394,7 @@ function App() {
           className="modal-close-button"
           onClick={() => {
             setShowShakerSortModal(false);
-            window.location.reload(); // Sayfayı yenile
+            window.location.reload();
           }}
         >
           Close
@@ -1294,6 +1408,15 @@ function App() {
               </Avatar>
             }
           />
+          <audio id="selectionSortAudio" src="/selectionsort.wav"></audio>
+          <div>
+            <IconButton aria-label="Play" onClick={playAudioSelection}>
+              <PlayArrowIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+            <IconButton aria-label="Pause" onClick={pauseAudioSelection}>
+              <PauseIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+          </div>
           <CardContent>
             <Typography variant="body2" color="text.secondary">
               Selection Sort is a simple and efficient sorting algorithm among
@@ -1350,6 +1473,15 @@ function App() {
               </Avatar>
             }
           />
+          <audio id="quickSortAudio" src="/quicksort.wav"></audio>
+          <div>
+            <IconButton aria-label="Play" onClick={playAudioQuick}>
+              <PlayArrowIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+            <IconButton aria-label="Pause" onClick={pauseAudioQuick}>
+              <PauseIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+          </div>
           <CardContent>
             <Typography variant="body2" color="text.secondary">
               Quick Sort is a fast and efficient sorting algorithm that is
@@ -1408,7 +1540,7 @@ function App() {
             title="What is Counting Sort"
             avatar={
               <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
-                <LooksOneIcon  sx={{ fontSize: 40 }} />
+                <LooksOneIcon sx={{ fontSize: 40 }} />
               </Avatar>
             }
           />
@@ -1457,10 +1589,19 @@ function App() {
             title="What is Radix Sort"
             avatar={
               <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
-                <ArrowUpwardIcon  sx={{ fontSize: 40 }} />
+                <ArrowUpwardIcon sx={{ fontSize: 40 }} />
               </Avatar>
             }
           />
+          <audio id="radixSortAudio" src="/radixsort.wav"></audio>
+          <div>
+            <IconButton aria-label="Play" onClick={playAudioRadix}>
+              <PlayArrowIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+            <IconButton aria-label="Pause" onClick={pauseAudioRadix}>
+              <PauseIcon sx={{ height: 50, width: 50 }} />
+            </IconButton>
+          </div>
           <CardContent>
             <Typography variant="body2" color="text.secondary">
               Radix Sort is an efficient sorting algorithm for integers with a
@@ -1510,7 +1651,7 @@ function App() {
             title="What is Insertion Sort"
             avatar={
               <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
-                <DoubleArrowIcon  sx={{ fontSize: 40 }} />
+                <DoubleArrowIcon sx={{ fontSize: 40 }} />
               </Avatar>
             }
           />
@@ -1572,7 +1713,7 @@ function App() {
             title="What is Shaker Sort"
             avatar={
               <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
-                <ShuffleOnIcon  sx={{ fontSize: 40 }} />
+                <ShuffleOnIcon sx={{ fontSize: 40 }} />
               </Avatar>
             }
           />
@@ -1615,7 +1756,7 @@ function App() {
         isOpen={showShellSortModal}
         onRequestClose={() => {
           setShowShakerSortModal(false);
-          window.location.reload(); // Sayfayı yenile
+          window.location.reload();
         }}
         contentLabel="Shell Sort Visualization"
       >
@@ -1623,7 +1764,7 @@ function App() {
           className="modal-close-button"
           onClick={() => {
             setShowShellSortModal(false);
-            window.location.reload(); // Sayfayı yenile
+            window.location.reload();
           }}
         >
           Close
@@ -1633,7 +1774,7 @@ function App() {
             title="What is Shell Sort"
             avatar={
               <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
-                <TerminalIcon  sx={{ fontSize: 40 }} />
+                <TerminalIcon sx={{ fontSize: 40 }} />
               </Avatar>
             }
           />
@@ -1693,7 +1834,7 @@ function App() {
             title="What is Flash Sort"
             avatar={
               <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
-                <OfflineBoltIcon  sx={{ fontSize: 40 }} />
+                <OfflineBoltIcon sx={{ fontSize: 40 }} />
               </Avatar>
             }
           />
@@ -1746,7 +1887,7 @@ function App() {
             title="What is Stooge Sort"
             avatar={
               <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
-                <EmojiEmotionsIcon  sx={{ fontSize: 40 }} />
+                <EmojiEmotionsIcon sx={{ fontSize: 40 }} />
               </Avatar>
             }
           />
@@ -1797,7 +1938,7 @@ function App() {
             title="What is Comb Sort"
             avatar={
               <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
-                <CategoryIcon  sx={{ fontSize: 40 }} />
+                <CategoryIcon sx={{ fontSize: 40 }} />
               </Avatar>
             }
           />
@@ -1849,7 +1990,7 @@ function App() {
             title="What is Gnome Sort"
             avatar={
               <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
-                <ViewQuiltIcon  sx={{ fontSize: 40 }} />
+                <ViewQuiltIcon sx={{ fontSize: 40 }} />
               </Avatar>
             }
           />
