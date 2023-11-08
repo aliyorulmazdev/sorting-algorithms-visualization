@@ -9,6 +9,15 @@ import DataGrid from "@inovua/reactdatagrid-community";
 import "@inovua/reactdatagrid-community/index.css";
 import "./App.css";
 import selectionSortVisualization from "./selectionSortVisualization";
+import countingSortVisualization from "./countingSortVisualization";
+import radixSortVisualization from "./radixSortVisualization";
+import insertionSortVisualization from "./insertionSortVisualization";
+import shakerSortVisualization from "./shakerSortVisualization";
+import shellSortVisualization from "./shellSortVisualization";
+import flashSortVisualization from "./flashSortVisualization";
+import stoogeSortVisualization from "./stoogeSortVisualization";
+import combSortVisualization from "./combSortVisualization";
+import gnomeSortVisualization from "./gnomeSortVisulization";
 import {
   Avatar,
   Button,
@@ -22,6 +31,15 @@ import {
 import SpeedIcon from "@mui/icons-material/Speed";
 import MergeIcon from "@mui/icons-material/Merge";
 import MemoryIcon from "@mui/icons-material/Memory";
+import LooksOneIcon from '@mui/icons-material/LooksOne';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
+import ShuffleOnIcon from '@mui/icons-material/ShuffleOn';
+import TerminalIcon from '@mui/icons-material/Terminal';
+import OfflineBoltIcon from '@mui/icons-material/OfflineBolt';
+import EmojiEmotionsIcon from '@mui/icons-material/EmojiEmotions';
+import CategoryIcon from '@mui/icons-material/Category';
+import ViewQuiltIcon from '@mui/icons-material/ViewQuilt';
 import BubbleChartIcon from "@mui/icons-material/BubbleChart";
 import SelectAllIcon from "@mui/icons-material/SelectAll";
 import FastForwardIcon from "@mui/icons-material/FastForward";
@@ -36,11 +54,29 @@ function App() {
   const [showBubbleSortModal, setShowBubbleSortModal] = useState(false);
   const [showSelectionSortModal, setShowSelectionSortModal] = useState(false);
   const [showQuickSortModal, setShowQuickSortModal] = useState(false);
+  const [showCountingSortModal, setShowCountingSortModal] = useState(false);
+  const [showRadixSortModal, setShowRadixSortModal] = useState(false);
+  const [showInsertionSortModal, setShowInsertionSortModal] = useState(false);
+  const [showShakerSortModal, setShowShakerSortModal] = useState(false);
+  const [showShellSortModal, setShowShellSortModal] = useState(false);
+  const [showFlashSortModal, setShowFlashSortModal] = useState(false);
+  const [showStoogeSortModal, setShowStoogeSortModal] = useState(false);
+  const [showCombSortModal, setShowCombSortModal] = useState(false);
+  const [showGnomeSortModal, setShowGnomeSortModal] = useState(false);
   const [mergeSortArray, setMergeSortArray] = useState([]);
   const [heapSortArray, setHeapSortArray] = useState([]);
   const [bubbleSortArray, setBubbleSortArray] = useState([]);
   const [selectionSortArray, setSelectionSortArray] = useState([]);
   const [quickSortArray, setQuickSortArray] = useState([]);
+  const [countingSortArray, setCountingSortArray] = useState([]);
+  const [radixSortArray, setRadixSortArray] = useState([]);
+  const [InsertionSortArray, setInsertionSortArray] = useState([]);
+  const [shakerSortArray, setShakerSortArray] = useState([]);
+  const [shellSortArray, setShellSortArray] = useState([]);
+  const [flashSortArray, setFlashSortArray] = useState([]);
+  const [stoogeSortArray, setStoogeSortArray] = useState([]);
+  const [combSortArray, setCombSortArray] = useState([]);
+  const [gnomeSortArray, setGnomeSortArray] = useState([]);
   // eslint-disable-next-line
   const [isSorting, setIsSorting] = useState(false);
   const gridStyle = { minHeight: 550, marginTop: "10px" };
@@ -92,6 +128,95 @@ function App() {
     quickSortVisualization([...randomArray], (sortedArray) => {
       setIsSorting(false);
       setQuickSortArray(sortedArray);
+    });
+  };
+
+  const startCountingSortVisualization = () => {
+    setShowCountingSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    countingSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setCountingSortArray(sortedArray);
+    });
+  };
+
+  const startRadixSortVisualization = () => {
+    setShowRadixSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    radixSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setRadixSortArray(sortedArray);
+    });
+  };
+
+  const startInsertionSortVisualization = () => {
+    setShowInsertionSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    insertionSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setInsertionSortArray(sortedArray);
+    });
+  };
+
+  const startShakerSortVisualization = () => {
+    setShowShakerSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    shakerSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setShakerSortArray(sortedArray);
+    });
+  };
+
+  const startShellSortVisualization = () => {
+    setShowShellSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    shellSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setShellSortArray(sortedArray);
+    });
+  };
+
+  const startFlashSortVisualization = () => {
+    setShowFlashSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    flashSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setFlashSortArray(sortedArray);
+    });
+  };
+
+  const startStoogeSortVisualization = () => {
+    setShowStoogeSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    stoogeSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setStoogeSortArray(sortedArray);
+    });
+  };
+  const startCombSortVisualization = () => {
+    setShowCombSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    combSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setCombSortArray(sortedArray);
+    });
+  };
+
+  const startGnomeSortVisualization = () => {
+    setShowGnomeSortModal(true);
+    setIsSorting(true);
+    const randomArray = generateRandomArray();
+    gnomeSortVisualization([...randomArray], (sortedArray) => {
+      setIsSorting(false);
+      setGnomeSortArray(sortedArray);
     });
   };
 
@@ -813,37 +938,123 @@ function App() {
         </Button>
       </ButtonGroup>
       <Divider variant="middle" />
-      <ButtonGroup
-        variant="text"
-        color="secondary"
-        aria-label="text button group"
-        style={{ marginTop: "10px" }}
-      >
-        <Button onClick={startMergeSortVisualization} startIcon={<MergeIcon />}>
-          Merge Sort Visualization
-        </Button>
-        <Button onClick={startHeapSortVisualization} startIcon={<MemoryIcon />}>
-          Heap Sort Visualization
-        </Button>
-        <Button
-          onClick={startBubbleSortVisualization}
-          startIcon={<BubbleChartIcon />}
+      <div>
+        <ButtonGroup
+          variant="text"
+          color="secondary"
+          aria-label="text button group"
+          style={{ marginTop: "10px" }}
         >
-          Bubble Sort Visualization
-        </Button>
-        <Button
-          onClick={startSelectionSortVisualization}
-          startIcon={<SelectAllIcon />}
+          <Button
+            onClick={startMergeSortVisualization}
+            startIcon={<MergeIcon />}
+          >
+            Merge Sort Visualization
+          </Button>
+          <Button
+            onClick={startHeapSortVisualization}
+            startIcon={<MemoryIcon />}
+          >
+            Heap Sort Visualization
+          </Button>
+          <Button
+            onClick={startBubbleSortVisualization}
+            startIcon={<BubbleChartIcon />}
+          >
+            Bubble Sort Visualization
+          </Button>
+          <Button
+            onClick={startSelectionSortVisualization}
+            startIcon={<SelectAllIcon />}
+          >
+            Selection Sort Visualization
+          </Button>
+          <Button
+            onClick={startQuickSortVisualization}
+            startIcon={<FastForwardIcon />}
+          >
+            Quick Sort Visualization
+          </Button>
+        </ButtonGroup>
+      </div>
+      <div>
+        <ButtonGroup
+          variant="text"
+          color="secondary"
+          aria-label="text button group"
+          style={{ marginTop: "10px" }}
         >
-          Selection Sort Visualization
-        </Button>
-        <Button
-          onClick={startQuickSortVisualization}
-          startIcon={<FastForwardIcon />}
+          <Button
+            onClick={startCountingSortVisualization}
+            startIcon={<LooksOneIcon  />}
+            disabled
+          >
+            Counting Sort Visualization
+          </Button>
+          <Button
+            onClick={startRadixSortVisualization}
+            startIcon={<ArrowUpwardIcon  />}
+          >
+            Radix Sort Visualization
+          </Button>
+          <Button
+            onClick={startInsertionSortVisualization}
+            startIcon={<DoubleArrowIcon  />}
+          >
+            Insertion Sort Visualization
+          </Button>
+          <Button
+            onClick={startShakerSortVisualization}
+            startIcon={<ShuffleOnIcon  />}
+          >
+            Shaker Sort Visualization
+          </Button>
+          <Button
+            onClick={startShellSortVisualization}
+            startIcon={<TerminalIcon  />}
+          >
+            Shell Sort Visualization
+          </Button>
+        </ButtonGroup>
+      </div>
+
+      <div>
+        <ButtonGroup
+          variant="text"
+          color="secondary"
+          aria-label="text button group"
+          style={{ marginTop: "10px" }}
         >
-          Quick Sort Visualization
-        </Button>
-      </ButtonGroup>
+          <Button
+            onClick={startFlashSortVisualization}
+            startIcon={<OfflineBoltIcon  />}
+          >
+            Flash Sort Visualization
+          </Button>
+
+          <Button
+            onClick={startStoogeSortVisualization}
+            startIcon={<EmojiEmotionsIcon   />}
+          >
+            Stooge Sort Visualization
+          </Button>
+
+          <Button
+            onClick={startCombSortVisualization}
+            startIcon={<CategoryIcon  />}
+          >
+            Comb Sort Visualization
+          </Button>
+
+          <Button
+            onClick={startGnomeSortVisualization}
+            startIcon={<ViewQuiltIcon  />}
+          >
+            Gnome Sort Visualization
+          </Button>
+        </ButtonGroup>
+      </div>
+
       <Divider
         variant="middle"
         style={{ marginTop: "10px", marginBottom: "10px" }}
@@ -892,6 +1103,15 @@ function App() {
         onRequestClose={() => setShowMergeSortModal(false)}
         contentLabel="Merge Sort Visualization"
       >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            setShowShakerSortModal(false);
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
         <Card>
           <CardHeader
             title="What is Merge Sort"
@@ -939,6 +1159,15 @@ function App() {
         onRequestClose={() => setShowHeapSortModal(false)}
         contentLabel="Heap Sort Visualization"
       >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            setShowShakerSortModal(false);
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
         <Card>
           <CardHeader
             title="What is Heapsort"
@@ -989,6 +1218,15 @@ function App() {
         onRequestClose={() => setShowBubbleSortModal(false)}
         contentLabel="Bubble Sort Visualization"
       >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            setShowShakerSortModal(false);
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
         <Card>
           <CardHeader
             title="What is Bubble Sort:"
@@ -1038,6 +1276,15 @@ function App() {
         onRequestClose={() => setShowSelectionSortModal(false)}
         contentLabel="Selection Sort Visualization"
       >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            setShowShakerSortModal(false);
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
         <Card>
           <CardHeader
             title="What is Selection Sort"
@@ -1085,6 +1332,15 @@ function App() {
         onRequestClose={() => setShowQuickSortModal(false)}
         contentLabel="Quick Sort Visualization"
       >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            setShowShakerSortModal(false);
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
         <Card>
           <CardHeader
             title="What is Quick Sort"
@@ -1123,6 +1379,497 @@ function App() {
 
         <div className="array-visualization">
           {quickSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+      <Modal
+        isOpen={showCountingSortModal}
+        onRequestClose={() => setShowCountingSortModal(false)}
+        contentLabel="Counting Sort Visualization"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            setShowShakerSortModal(false);
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
+        <Card>
+          <CardHeader
+            title="What is Counting Sort"
+            avatar={
+              <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
+                <LooksOneIcon  sx={{ fontSize: 40 }} />
+              </Avatar>
+            }
+          />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary">
+              Counting Sort is a simple and efficient sorting algorithm that
+              works well when sorting a limited range of non-negative integers.
+              It counts the occurrences of each element, which helps it place
+              the elements in their correct positions in linear time complexity
+              O(n), making it suitable for specific use cases where its
+              assumptions are met. However, it may not perform efficiently for
+              datasets with a wide range of values or floating-point numbers.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <div className="array-visualization">
+          {countingSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showRadixSortModal}
+        onRequestClose={() => setShowRadixSortModal(false)}
+        contentLabel="Radix Sort Visualization"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            setShowShakerSortModal(false);
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
+        <Card>
+          <CardHeader
+            title="What is Radix Sort"
+            avatar={
+              <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
+                <ArrowUpwardIcon  sx={{ fontSize: 40 }} />
+              </Avatar>
+            }
+          />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary">
+              Radix Sort is an efficient sorting algorithm for integers with a
+              known maximum number of digits. It distributes elements into
+              buckets based on each digit's value and processes from the least
+              significant digit (LSD) to the most significant digit (MSD). Radix
+              Sort has a time complexity of O(k * n), where "k" is the number of
+              digits, and "n" is the number of elements. It's most effective
+              when "k" is relatively small and constant. For larger "k," other
+              sorting algorithms like Quick Sort or Merge Sort may be preferred.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <div className="array-visualization">
+          {radixSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showInsertionSortModal}
+        onRequestClose={() => {
+          setShowInsertionSortModal(false);
+          window.location.reload(); // Sayfayı yenile
+        }}
+        contentLabel="Insertion Sort Visualization"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            setShowShakerSortModal(false);
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
+        <Card>
+          <CardHeader
+            title="What is Insertion Sort"
+            avatar={
+              <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
+                <DoubleArrowIcon  sx={{ fontSize: 40 }} />
+              </Avatar>
+            }
+          />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary">
+              Insertion Sort is a simple and straightforward sorting algorithm
+              that works efficiently for relatively small datasets. It
+              repeatedly takes an element from the unsorted part of the array
+              and places it in its correct position within the sorted part of
+              the array. It's like sorting a hand of playing cards where you
+              insert each card into its proper place as you go. The time
+              complexity of Insertion Sort is O(n^2) in the worst and average
+              cases, making it less efficient for large datasets. However, for
+              small datasets, it can outperform more complex sorting algorithms
+              due to its simplicity and low overhead. Insertion Sort is
+              particularly useful when the array is nearly sorted, as it
+              requires fewer comparisons and swaps in such cases. It's also an
+              in-place sorting algorithm, which means it sorts the array without
+              requiring additional memory. For larger datasets or scenarios
+              where time efficiency is crucial, faster sorting algorithms like
+              Quick Sort or Merge Sort are generally preferred due to their more
+              favorable time complexity.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <div className="array-visualization">
+          {InsertionSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showShakerSortModal}
+        onRequestClose={() => {
+          setShowShakerSortModal(false);
+          window.location.reload(); // Sayfayı yenile
+        }}
+        contentLabel="Shaker Sort Visualization"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            setShowShakerSortModal(false);
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
+        <Card>
+          <CardHeader
+            title="What is Shaker Sort"
+            avatar={
+              <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
+                <ShuffleOnIcon  sx={{ fontSize: 40 }} />
+              </Avatar>
+            }
+          />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary">
+              Shaker Sort is a simple and straightforward sorting algorithm that
+              works efficiently for relatively small datasets. It repeatedly
+              takes an element from the unsorted part of the array and places it
+              in its correct position within the sorted part of the array. It's
+              like sorting a hand of playing cards where you insert each card
+              into its proper place as you go. The time complexity of Shaker
+              Sort is O(n^2) in the worst and average cases, making it less
+              efficient for large datasets. However, for small datasets, it can
+              outperform more complex sorting algorithms due to its simplicity
+              and low overhead. Shaker Sort is particularly useful when the
+              array is nearly sorted, as it requires fewer comparisons and swaps
+              in such cases. It's also an in-place sorting algorithm, which
+              means it sorts the array without requiring additional memory. For
+              larger datasets or scenarios where time efficiency is crucial,
+              faster sorting algorithms like Quick Sort or Merge Sort are
+              generally preferred due to their more favorable time complexity.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <div className="array-visualization">
+          {shakerSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showShellSortModal}
+        onRequestClose={() => {
+          setShowShakerSortModal(false);
+          window.location.reload(); // Sayfayı yenile
+        }}
+        contentLabel="Shell Sort Visualization"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            setShowShellSortModal(false);
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
+        <Card>
+          <CardHeader
+            title="What is Shell Sort"
+            avatar={
+              <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
+                <TerminalIcon  sx={{ fontSize: 40 }} />
+              </Avatar>
+            }
+          />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary">
+              Shell Sort is an efficient sorting algorithm that works well for
+              relatively small datasets. It's an extension of the Insertion Sort
+              algorithm, designed to improve its performance by sorting elements
+              at varying intervals. Shell Sort repeatedly divides the list into
+              smaller sublists and sorts them independently using an insertion
+              sort. The unique feature of Shell Sort is that it gradually
+              reduces the interval between elements to be compared and swapped,
+              which leads to a more efficient sorting process. The time
+              complexity of Shell Sort depends on the chosen sequence of
+              intervals but is generally better than O(n^2) for the worst and
+              average cases, making it suitable for moderate-sized datasets. In
+              situations where you have large datasets, more advanced sorting
+              algorithms like Quick Sort or Merge Sort are preferred for their
+              better time complexity. However, Shell Sort's simplicity and low
+              overhead make it a viable choice for small to medium-sized
+              datasets. It's also an in-place sorting algorithm, which means it
+              sorts the array without requiring additional memory.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <div className="array-visualization">
+          {shellSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showFlashSortModal}
+        onRequestClose={() => {
+          window.location.reload(); // Sayfayı yenile
+        }}
+        contentLabel="Flash Sort Visualization"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
+        <Card>
+          <CardHeader
+            title="What is Flash Sort"
+            avatar={
+              <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
+                <OfflineBoltIcon  sx={{ fontSize: 40 }} />
+              </Avatar>
+            }
+          />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary">
+              Flash Sort is an efficient sorting algorithm for relatively small
+              datasets. It works by dividing the list into smaller sublists and
+              independently sorting them using insertion sort. Flash Sort
+              reduces the interval between elements to be compared, resulting in
+              a more efficient sorting process. Its time complexity depends on
+              the chosen interval sequence but is generally better than O(n^2)
+              for worst and average cases. This makes it suitable for
+              moderate-sized datasets. Flash Sort is an in-place sorting
+              algorithm, meaning it sorts the array without requiring additional
+              memory.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <div className="array-visualization">
+          {flashSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showStoogeSortModal}
+        onRequestClose={() => {
+          window.location.reload(); // Sayfayı yenile
+        }}
+        contentLabel="Stooge Sort Visualization"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
+        <Card>
+          <CardHeader
+            title="What is Stooge Sort"
+            avatar={
+              <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
+                <EmojiEmotionsIcon  sx={{ fontSize: 40 }} />
+              </Avatar>
+            }
+          />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary">
+              Stooge Sort is a relatively inefficient sorting algorithm that
+              works by dividing the list into three parts, recursively sorting
+              the first two-thirds and the last two-thirds, and then recursively
+              sorting the first two-thirds again. Its time complexity is less
+              efficient than more popular sorting algorithms, making it suitable
+              mainly for educational or illustrative purposes rather than
+              practical use. Stooge Sort is an in-place sorting algorithm,
+              meaning it doesn't require additional memory to sort the array.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <div className="array-visualization">
+          {stoogeSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showCombSortModal}
+        onRequestClose={() => {
+          window.location.reload(); // Sayfayı yenile
+        }}
+        contentLabel="Comb Sort Visualization"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
+        <Card>
+          <CardHeader
+            title="What is Comb Sort"
+            avatar={
+              <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
+                <CategoryIcon  sx={{ fontSize: 40 }} />
+              </Avatar>
+            }
+          />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary">
+              Combsort is an improvement over the Bubble Sort algorithm. It
+              reduces the amount of time spent comparing and swapping elements
+              by gradually decreasing the gap between elements compared. This
+              results in a more efficient sorting process compared to Bubble
+              Sort. Combsort's time complexity depends on the gap sequence used,
+              but it generally performs better than O(n^2) for the worst and
+              average cases. This makes Combsort suitable for sorting
+              moderate-sized datasets. It is an in-place sorting algorithm,
+              meaning it sorts the array without requiring additional memory.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <div className="array-visualization">
+          {combSortArray.map((value, index) => (
+            <div
+              key={index}
+              className="array-bar"
+              style={{ height: `${value * 3}px` }}
+            >
+              <div className="array-bar-label">{value}</div>
+            </div>
+          ))}
+        </div>
+      </Modal>
+
+      <Modal
+        isOpen={showGnomeSortModal}
+        onRequestClose={() => {
+          window.location.reload(); // Sayfayı yenile
+        }}
+        contentLabel="Gnome Sort Visualization"
+      >
+        <button
+          className="modal-close-button"
+          onClick={() => {
+            window.location.reload(); // Sayfayı yenile
+          }}
+        >
+          Close
+        </button>
+        <Card>
+          <CardHeader
+            title="What is Gnome Sort"
+            avatar={
+              <Avatar sx={{ bgcolor: blue[500], width: 50, height: 50 }}>
+                <ViewQuiltIcon  sx={{ fontSize: 40 }} />
+              </Avatar>
+            }
+          />
+          <CardContent>
+            <Typography variant="body2" color="text.secondary">
+              Gnome Sort is an improvement over the Bubble Sort algorithm. It
+              optimizes the time spent comparing and swapping elements by
+              gradually reducing the gap between elements compared. This results
+              in a more efficient sorting process compared to Bubble Sort. Gnome
+              Sort's time complexity depends on the chosen gap sequence, but it
+              generally performs better than O(n^2) for the worst and average
+              cases. This makes Gnome Sort suitable for sorting moderate-sized
+              datasets. It is an in-place sorting algorithm, meaning it sorts
+              the array without requiring additional memory.
+            </Typography>
+          </CardContent>
+        </Card>
+
+        <div className="array-visualization">
+          {gnomeSortArray.map((value, index) => (
             <div
               key={index}
               className="array-bar"
