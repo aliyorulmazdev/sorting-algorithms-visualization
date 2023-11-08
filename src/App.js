@@ -862,87 +862,14 @@ function App() {
     return mergedList;
   };
 
-  function playAudio() {
-    const audio = document.getElementById("mergeSortAudio");
+  function playPauseAudio(audioId) {
+    const audio = document.getElementById(audioId);
     if (audio) {
-      audio.play();
-    }
-  }
-
-  function pauseAudio() {
-    const audio = document.getElementById("mergeSortAudio");
-    if (audio) {
-      audio.pause();
-    }
-  }
-
-  function playAudioHeap() {
-    const audio = document.getElementById("heapSortAudio");
-    if (audio) {
-      audio.play();
-    }
-  }
-
-  function pauseAudioHeap() {
-    const audio = document.getElementById("heapSortAudio");
-    if (audio) {
-      audio.pause();
-    }
-  }
-
-  function playAudioBubble() {
-    const audio = document.getElementById("bubbleSortAudio");
-    if (audio) {
-      audio.play();
-    }
-  }
-
-  function pauseAudioBubble() {
-    const audio = document.getElementById("bubbleSortAudio");
-    if (audio) {
-      audio.pause();
-    }
-  }
-
-  function playAudioSelection() {
-    const audio = document.getElementById("selectionSortAudio");
-    if (audio) {
-      audio.play();
-    }
-  }
-
-  function pauseAudioSelection() {
-    const audio = document.getElementById("selectionSortAudio");
-    if (audio) {
-      audio.pause();
-    }
-  }
-
-  function playAudioQuick() {
-    const audio = document.getElementById("quickSortAudio");
-    if (audio) {
-      audio.play();
-    }
-  }
-
-  function pauseAudioQuick() {
-    const audio = document.getElementById("quickSortAudio");
-    if (audio) {
-      audio.pause();
-    }
-  }
-
-  function playAudioRadix() {
-    const audio = document.getElementById("radixSortAudio");
-    if (audio) {
-      audio.play();
-    }
-  }
-
-  function pauseAudioRadix() {
-    const audio = document.getElementById("radixSortAudio");
-    if (audio) {
-      audio.pause();
+      if (audio.paused) {
+        audio.play();
+      } else {
+        audio.pause();
+      }
     }
   }
 
@@ -1210,10 +1137,16 @@ function App() {
           />
           <audio id="mergeSortAudio" src="/mergesort.wav"></audio>
           <div>
-            <IconButton aria-label="Play" onClick={playAudio}>
+            <IconButton
+              aria-label="Play"
+              onClick={() => playPauseAudio("mergeSortAudio")}
+            >
               <PlayArrowIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
-            <IconButton aria-label="Pause" onClick={pauseAudio}>
+            <IconButton
+              aria-label="Pause"
+              onClick={() => playPauseAudio("mergeSortAudio")}
+            >
               <PauseIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
           </div>
@@ -1275,10 +1208,16 @@ function App() {
           />
           <audio id="heapSortAudio" src="/heapsort.wav"></audio>
           <div>
-            <IconButton aria-label="Play" onClick={playAudioHeap}>
+            <IconButton
+              aria-label="Play"
+              onClick={() => playPauseAudio("heapSortAudio")}
+            >
               <PlayArrowIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
-            <IconButton aria-label="Pause" onClick={pauseAudioHeap}>
+            <IconButton
+              aria-label="Pause"
+              onClick={() => playPauseAudio("heapSortAudio")}
+            >
               <PauseIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
           </div>
@@ -1343,10 +1282,16 @@ function App() {
           />
           <audio id="bubbleSortAudio" src="/bubblesort.wav"></audio>
           <div>
-            <IconButton aria-label="Play" onClick={playAudioBubble}>
+            <IconButton
+              aria-label="Play"
+              onClick={() => playPauseAudio("bubbleSortAudio")}
+            >
               <PlayArrowIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
-            <IconButton aria-label="Pause" onClick={pauseAudioBubble}>
+            <IconButton
+              aria-label="Pause"
+              onClick={() => playPauseAudio("bubbleSortAudio")}
+            >
               <PauseIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
           </div>
@@ -1410,10 +1355,16 @@ function App() {
           />
           <audio id="selectionSortAudio" src="/selectionsort.wav"></audio>
           <div>
-            <IconButton aria-label="Play" onClick={playAudioSelection}>
+            <IconButton
+              aria-label="Play"
+              onClick={() => playPauseAudio("selectionSortAudio")}
+            >
               <PlayArrowIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
-            <IconButton aria-label="Pause" onClick={pauseAudioSelection}>
+            <IconButton
+              aria-label="Pause"
+              onClick={() => playPauseAudio("selectionSortAudio")}
+            >
               <PauseIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
           </div>
@@ -1475,10 +1426,16 @@ function App() {
           />
           <audio id="quickSortAudio" src="/quicksort.wav"></audio>
           <div>
-            <IconButton aria-label="Play" onClick={playAudioQuick}>
+            <IconButton
+              aria-label="Play"
+              onClick={() => playPauseAudio("quickSortAudio")}
+            >
               <PlayArrowIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
-            <IconButton aria-label="Pause" onClick={pauseAudioQuick}>
+            <IconButton
+              aria-label="Pause"
+              onClick={() => playPauseAudio("quickSortAudio")}
+            >
               <PauseIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
           </div>
@@ -1595,10 +1552,16 @@ function App() {
           />
           <audio id="radixSortAudio" src="/radixsort.wav"></audio>
           <div>
-            <IconButton aria-label="Play" onClick={playAudioRadix}>
+            <IconButton
+              aria-label="Play"
+              onClick={() => playPauseAudio("radixSortAudio")}
+            >
               <PlayArrowIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
-            <IconButton aria-label="Pause" onClick={pauseAudioRadix}>
+            <IconButton
+              aria-label="Pause"
+              onClick={() => playPauseAudio("radixSortAudio")}
+            >
               <PauseIcon sx={{ height: 50, width: 50 }} />
             </IconButton>
           </div>
