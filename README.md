@@ -2,7 +2,7 @@
 
 This web application visualizes the performance of various sorting algorithms by sorting 100 randomly generated arrays, each containing 100 numbers. The sorting times are measured in milliseconds, and the average times for each sorting algorithm are displayed in a table.
 
-# Getting Started
+# Getting Startedd
 
 To get started, you can clone this repository and run the following commands:
 
