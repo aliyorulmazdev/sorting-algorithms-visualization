@@ -1,9 +1,12 @@
 # Çok aşamalı build: Bağımlılık kurulumu
 FROM node:18-alpine AS deps
 WORKDIR /app
+# Önce sadece package.json ve package-lock.json kopyalayarak önbellek kullanımını maksimize ediyoruz
 COPY package*.json ./
-# Daha hızlı npm install
-RUN npm install --prefer-offline --no-audit --silent
+# Daha hızlı npm install için ek parametreler
+RUN npm config set cache /tmp/npm-cache --global && \
+    npm ci --prefer-offline --no-audit --silent --production && \
+    npm cache clean --force
 
 # Build aşaması: Derleme
 FROM node:18-alpine AS builder
@@ -14,6 +17,8 @@ COPY . .
 ENV NODE_ENV=production
 ENV GENERATE_SOURCEMAP=false
 ENV CI=false
+# Thread sayısını artırarak derleme hızını artırıyoruz
+ENV NODE_OPTIONS="--max-old-space-size=4096 --max-http-header-size=16384"
 RUN npm run build
 
 # Üretim aşaması: Minimal imaj
