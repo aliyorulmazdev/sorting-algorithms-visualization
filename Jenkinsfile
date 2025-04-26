@@ -17,10 +17,7 @@ pipeline {
         stage('Prepare Minikube') {
             steps {
                 sh """
-                    sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start \\
-                        --driver=docker \\
-                        --memory=4000 \\
-                        --cpus=2
+                    sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start --driver=docker --memory=4000 --cpus=2
                     mkdir -p /var/lib/jenkins/.kube
                     sudo cp /home/${DEPLOY_USER}/.kube/config /var/lib/jenkins/.kube/config
                     sudo chown -R jenkins:jenkins /var/lib/jenkins/.kube
@@ -29,15 +26,14 @@ pipeline {
         }
         stage('Build Docker Image') {
             steps {
-                // Build Docker image using the host Docker (not Minikube's Docker)
                 sh """
-                    # Minikube'un Docker Image registry'sine erişmek için port-forward kullanın
+                    # Clean up any old docker images
                     sudo -u ${DEPLOY_USER} minikube ssh -- docker system prune -af
                     
-                    # Ana sistem Docker'ını kullanarak image'ı build edin
+                    # Build the Docker image
                     docker build -t ${DOCKER_IMAGE} -f ./docker/Dockerfile .
                     
-                    # Image'ı save edip Minikube içine load edin
+                    # Save and load image to Minikube
                     docker save ${DOCKER_IMAGE} | sudo -u ${DEPLOY_USER} minikube ssh -- docker load
                 """
             }
@@ -45,12 +41,18 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 sh """
+                    # Apply k8s configuration
                     kubectl apply -f ./k8s/react-deployment.yaml
-                    kubectl rollout status deployment/react-app --timeout=2m
                     
-                    nohup sudo -u ${DEPLOY_USER} minikube tunnel >/dev/null 2>&1 &
-                    sleep 10
-                    echo "APP URL: \$(sudo -u ${DEPLOY_USER} minikube service react-service --url)"
+                    # Wait for the deployment to complete
+                    kubectl rollout status deployment/react-app --timeout=3m
+                    
+                    # Start minikube tunnel in background to expose the LoadBalancer service
+                    nohup sudo -u ${DEPLOY_USER} minikube tunnel > /tmp/minikube-tunnel.log 2>&1 &
+                    sleep 15
+                    
+                    # Display service URL
+                    echo "APP URL: \$(kubectl get service react-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}'):80"
                 """
             }
         }
@@ -58,6 +60,7 @@ pipeline {
     post {
         always {
             sh """
+                # Clean up minikube tunnel process
                 sudo pkill -f "minikube tunnel" || true
             """
             cleanWs()
