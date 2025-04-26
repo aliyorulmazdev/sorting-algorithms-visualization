@@ -22,9 +22,7 @@ pipeline {
             steps {
                 sh """
                     sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start --driver=docker --memory=4000 --cpus=2
-                    mkdir -p /var/lib/jenkins/.kube
-                    sudo cp /home/${DEPLOY_USER}/.kube/config /var/lib/jenkins/.kube/config
-                    sudo chown -R jenkins:jenkins /var/lib/jenkins/.kube
+                    # Artık .kube/config dosyasını kopyalamaya gerek yok, kubectl komutları deployuser olarak çalıştırılacak
                 """
             }
         }
@@ -47,11 +45,12 @@ pipeline {
                             echo "Docker build başlıyor..."
                             sudo -u ${DEPLOY_USER} docker build --no-cache=false --progress=plain --build-arg BUILDKIT_INLINE_CACHE=1 -t ${DOCKER_IMAGE} -f ./docker/Dockerfile .
                             
-                            # Deployment hızlı uygula
-                            kubectl apply -f ./k8s/react-deployment.yaml --record
+                            # Deployment komutlarını deployuser olarak çalıştır
+                            echo "Kubernetes deployment başlıyor..."
+                            sudo -u ${DEPLOY_USER} kubectl apply -f ./k8s/react-deployment.yaml
                             
-                            # Deployment kontrolü
-                            kubectl rollout status deployment/react-app --timeout=30s
+                            # Deployment kontrolü - yine deployuser ile
+                            sudo -u ${DEPLOY_USER} kubectl rollout status deployment/react-app --timeout=30s
                             
                             # NodePort ve IP bilgisi
                             MINIKUBE_IP=\$(sudo -u ${DEPLOY_USER} minikube ip)
