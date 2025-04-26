@@ -63,13 +63,26 @@ pipeline {
             steps {
                 script {
                     sh '''
+                        # Önce tüm tunnel işlemlerini temizle
                         sudo pkill -f "minikube tunnel" || true
-                        nohup sudo -u ${DEPLOY_USER} minikube tunnel --cleanup --bind-address=0.0.0.0 &
+                        sudo killall -9 minikube || true
+                        ps aux | grep -i minikube | grep -v grep | awk '{print $2}' | xargs -r sudo kill -9 || true
+                        sleep 2
+                        
+                        # Tunnel'ı doğru şekilde başlat (arka planda)
+                        nohup sudo -u ${DEPLOY_USER} minikube tunnel --cleanup > /var/log/minikube-tunnel.log 2>&1 &
+                        echo "Tunnel başlatıldı..."
+                        sleep 5
+                        
+                        # Port açma
                         if command -v firewall-cmd >/dev/null 2>&1; then
-                          sudo firewall-cmd --add-port=30080/tcp --permanent || true
+                          sudo firewall-cmd --zone=public --add-port=30080/tcp --permanent || true
                           sudo firewall-cmd --reload || true
                         fi
-                        sleep 3
+                        
+                        # Port açıklığını kontrol et
+                        echo "Port kontrolü:"
+                        sudo netstat -tuln | grep 30080 || echo "Port henüz dinlenmiyor. Manuel kontrol gerekli."
                     '''
                 }
             }
@@ -77,8 +90,10 @@ pipeline {
         stage('Erişim Bilgisi') {
             steps {
                 script {
-                    def ip = sh(script: "sudo -u ${DEPLOY_USER} minikube ip", returnStdout: true).trim()
-                    echo "Uygulama dışarıdan erişilebilir: http://${ip}:30080"
+                    def externalIp = sh(script: "curl -s ifconfig.me || hostname -I | awk '{print \$1}'", returnStdout: true).trim()
+                    echo "Uygulama dışarıdan erişilebilir: http://${externalIp}:30080"
+                    echo "NOT: Tunnel işlemi arka planda çalışıyor. Port açık değilse, şu komutu çalıştırın:"
+                    echo "sudo -u ${DEPLOY_USER} minikube tunnel --cleanup"
                 }
             }
         }
