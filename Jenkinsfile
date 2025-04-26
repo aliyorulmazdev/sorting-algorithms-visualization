@@ -26,7 +26,7 @@ pipeline {
             steps {
                 script {
                     def minikubeOutput = sh(script: """
-                        sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start --driver=docker --memory=4000 --cpus=2
+                        sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start --driver=docker --listen-address=0.0.0.0 --memory=4000 --cpus=2
                         
                         # Docker imaj önbelleğini temizleme (sadece dangling imajlar için)
                         sudo -u ${DEPLOY_USER} minikube ssh -- 'docker image prune -f'
