@@ -13,6 +13,24 @@ pipeline {
                 checkout scm
             }
         }
+        stage('Ortam Hazırlığı') {
+            steps {
+                script {
+                    sh '''
+                        # Docker-compose kurulu mu kontrol et
+                        if ! command -v docker-compose &> /dev/null; then
+                            echo "Docker-compose kuruluyor..."
+                            sudo curl -L "https://github.com/docker/compose/releases/download/v2.21.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+                            sudo chmod +x /usr/local/bin/docker-compose
+                            docker-compose --version
+                        else
+                            echo "Docker-compose zaten kurulu."
+                            docker-compose --version
+                        fi
+                    '''
+                }
+            }
+        }
         stage('Temizlik') {
             steps {
                 script {

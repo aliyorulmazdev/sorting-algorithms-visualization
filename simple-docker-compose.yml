@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  react-app:
+    build:
+      context: .
+      dockerfile: simple-test.Dockerfile
+    ports:
+      - "30080:80"
+    restart: always
+    container_name: react-app 
