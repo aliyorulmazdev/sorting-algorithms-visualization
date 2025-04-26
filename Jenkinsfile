@@ -128,7 +128,7 @@ EOF
                             echo "====================================="
                         """
                     } catch (Exception e) {
-                        echo "Build veya deployment hatası: ${e.message}"
+                        echo "Build veya deployment hatası: ${e.getMessage()}"
                         // Hata durumunda bile pod durumlarını göster
                         sh """
                             echo "Hata durumunda pod bilgilerini kontrol ediyorum..."
@@ -143,7 +143,7 @@ EOF
                             echo "Docker imaj durumunu kontrol ediyorum..."
                             sudo -u ${DEPLOY_USER} minikube ssh -- "docker images | grep ${DOCKER_IMAGE} || echo 'İmaj bulunamadı'"
                         """
-                        error "İşlem başarısız oldu. Detaylar: ${e.message}"
+                        error "İşlem başarısız oldu. Detaylar: ${e.getMessage()}"
                     }
                 }
             }
