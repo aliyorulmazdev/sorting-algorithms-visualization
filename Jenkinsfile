@@ -40,7 +40,13 @@ pipeline {
             steps {
                 sh """
                     eval \$(sudo -u ${DEPLOY_USER} minikube docker-env)
-                    docker build -t ${DOCKER_IMAGE} ./app
+                    # Mevcut dizindeki dosyaları kullanarak build
+                    docker build -t ${DOCKER_IMAGE} -f ./Dockerfile .
+                    
+                    # Nginx.conf kontrolü
+                    if [ ! -f ./nginx.conf ]; then
+                        echo "ERROR: nginx.conf bulunamadı!" && exit 1
+                    fi
                 """
             }
         }
