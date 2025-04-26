@@ -14,7 +14,6 @@ pipeline {
                 ])
             }
         }
-
         stage('Prepare Minikube') {
             steps {
                 sh """
@@ -22,23 +21,27 @@ pipeline {
                         --driver=docker \\
                         --memory=4000 \\
                         --cpus=2
-
                     mkdir -p /var/lib/jenkins/.kube
                     sudo cp /home/${DEPLOY_USER}/.kube/config /var/lib/jenkins/.kube/config
                     sudo chown -R jenkins:jenkins /var/lib/jenkins/.kube
                 """
             }
         }
-
         stage('Build Docker Image') {
             steps {
+                // Build Docker image using the host Docker (not Minikube's Docker)
                 sh """
-                    eval \$(sudo -u ${DEPLOY_USER} minikube docker-env)
+                    # Minikube'un Docker Image registry'sine erişmek için port-forward kullanın
+                    sudo -u ${DEPLOY_USER} minikube ssh -- docker system prune -af
+                    
+                    # Ana sistem Docker'ını kullanarak image'ı build edin
                     docker build -t ${DOCKER_IMAGE} -f ./docker/Dockerfile .
+                    
+                    # Image'ı save edip Minikube içine load edin
+                    docker save ${DOCKER_IMAGE} | sudo -u ${DEPLOY_USER} minikube ssh -- docker load
                 """
             }
         }
-
         stage('Deploy to Minikube') {
             steps {
                 sh """
@@ -52,7 +55,6 @@ pipeline {
             }
         }
     }
-
     post {
         always {
             sh """
