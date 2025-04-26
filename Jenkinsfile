@@ -10,43 +10,30 @@ pipeline {
             steps {
                 checkout([$class: 'GitSCM',
                     branches: [[name: 'main']],
-                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'app']],
                     userRemoteConfigs: [[url: 'https://github.com/aliyorulmazdev/sorting-algorithms-visualization.git']]
                 ])
             }
         }
 
-        stage('Minikube Setup') {
+        stage('Prepare Minikube') {
             steps {
                 sh """
-                    # Cleanup
-                    sudo -u ${DEPLOY_USER} minikube delete || true
-                    
-                    # Start Minikube with optimized config
-                    sudo -u ${DEPLOY_USER} minikube start \
+                    sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start \
                         --driver=docker \
                         --memory=4000 \
-                        --cpus=2 \
-                        --addons=ingress,metrics-server
+                        --cpus=2
                     
-                    # Configure access
                     sudo cp /home/${DEPLOY_USER}/.kube/config /var/lib/jenkins/.kube/
-                    sudo chown jenkins:jenkins /var/lib/jenkins/.kube/config
+                    sudo chown -R jenkins:jenkins /var/lib/jenkins/.kube
                 """
             }
         }
 
-        stage('Build') {
+        stage('Build Docker Image') {
             steps {
                 sh """
                     eval \$(sudo -u ${DEPLOY_USER} minikube docker-env)
-                    # Mevcut dizindeki dosyaları kullanarak build
-                    docker build -t ${DOCKER_IMAGE} -f ./Dockerfile .
-                    
-                    # Nginx.conf kontrolü
-                    if [ ! -f ./nginx.conf ]; then
-                        echo "ERROR: nginx.conf bulunamadı!" && exit 1
-                    fi
+                    docker build -t ${DOCKER_IMAGE} -f ./docker/Dockerfile .
                 """
             }
         }
@@ -54,12 +41,11 @@ pipeline {
         stage('Deploy') {
             steps {
                 sh """
-                    kubectl apply -f ./app/k8s/
+                    kubectl apply -f ./k8s/react-deployment.yaml
                     kubectl rollout status deployment/react-app --timeout=2m
                     
-                    # Start tunnel and get URL
                     nohup sudo -u ${DEPLOY_USER} minikube tunnel >/dev/null 2>&1 &
-                    sleep 15
+                    sleep 10
                     echo "APP URL: \$(sudo -u ${DEPLOY_USER} minikube service react-service --url)"
                 """
             }
