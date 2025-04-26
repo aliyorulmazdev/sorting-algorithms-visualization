@@ -1,0 +1,40 @@
+# Git
+.git
+.gitignore
+
+# Node.js
+node_modules
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Build klasörleri
+/build
+/dist
+
+# Testler
+/__tests__
+/test
+/tests
+/coverage
+
+# IDE ve editör dosyaları
+/.idea
+/.vscode
+*.swp
+*.swo
+
+# Log dosyaları
+/logs
+*.log
+
+# Docker ve Kubernetes dosyaları
+/docker
+/k8s
+Dockerfile
+.dockerignore
+Jenkinsfile
+
+# Sistem dosyaları
+.DS_Store
+Thumbs.db 

@@ -24,35 +24,30 @@ pipeline {
                 """
             }
         }
-        stage('Build Docker Image') {
+        stage('Build and Deploy') {
             steps {
                 sh """
                     # Minikube'un Docker daemon'ını kullanmak için eval komutu çalıştır
                     eval \$(sudo -u ${DEPLOY_USER} minikube docker-env)
                     
-                    # Docker sistem temizleme
-                    sudo -u ${DEPLOY_USER} minikube ssh -- docker system prune -af
+                    # Build hızlandırma: Sadece gerekli temizleme işlemlerini yap
+                    sudo -u ${DEPLOY_USER} minikube ssh -- 'docker image prune -f'
                     
-                    # Minikube'un Docker daemon'ını kullanarak image'ı oluştur
-                    sudo -u ${DEPLOY_USER} docker build -t ${DOCKER_IMAGE} -f ./docker/Dockerfile .
-                """
-            }
-        }
-        stage('Deploy to Minikube') {
-            steps {
-                sh """
-                    # Apply k8s configuration
-                    kubectl apply -f ./k8s/react-deployment.yaml
+                    # Docker build hızlandırma (paralel build ve layer caching aktif)
+                    sudo -u ${DEPLOY_USER} docker build --no-cache=false --pull=false --build-arg BUILDKIT_INLINE_CACHE=1 -t ${DOCKER_IMAGE} -f ./docker/Dockerfile .
                     
-                    # Wait for the deployment to complete
-                    kubectl rollout status deployment/react-app --timeout=3m
+                    # Deployment uygula (hızlı)
+                    kubectl apply -f ./k8s/react-deployment.yaml --record
                     
-                    # Start minikube tunnel in background to expose the LoadBalancer service
-                    nohup sudo -u ${DEPLOY_USER} minikube tunnel > /tmp/minikube-tunnel.log 2>&1 &
-                    sleep 15
+                    # Deployment durumunu kontrol et (timeout azaltıldı)
+                    kubectl rollout status deployment/react-app --timeout=30s
                     
-                    # Display service URL
-                    echo "APP URL: \$(kubectl get service react-service -o jsonpath='{.status.loadBalancer.ingress[0].ip}'):80"
+                    # NodePort bilgisini al
+                    MINIKUBE_IP=\$(sudo -u ${DEPLOY_USER} minikube ip)
+                    
+                    # Servis bilgisini görüntüle (NodePort için)
+                    echo "Uygulamaya şu URL'den erişebilirsiniz:"
+                    echo "APP URL: http://\${MINIKUBE_IP}:30080"
                 """
             }
         }
@@ -60,10 +55,10 @@ pipeline {
     post {
         always {
             sh """
-                # Clean up minikube tunnel process
+                # Clean up işlemleri
                 sudo pkill -f "minikube tunnel" || true
             """
-            cleanWs()
+            cleanWs(cleanWhenNotBuilt: false, deleteDirs: true, disableDeferredWipeout: true)
         }
     }
 }
