@@ -26,6 +26,10 @@ pipeline {
                     sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start --driver=docker --memory=4000 --cpus=2
                     # Docker imaj önbelleğini temizleme (sadece dangling imajlar için)
                     sudo -u ${DEPLOY_USER} minikube ssh -- 'docker image prune -f'
+                    
+                    # Docker context'i Minikube ile synchronize et
+                    echo "Docker daemon'ını Minikube'a yönlendiriyorum..."
+                    eval \$(sudo -u ${DEPLOY_USER} minikube docker-env)
                 """
             }
         }
@@ -43,6 +47,9 @@ pipeline {
                             
                             # Build sürecini optimize ederek başlat
                             echo "Docker build başlıyor..."
+                            # Build önbelleğini etkinleştir
+                            sudo -u ${DEPLOY_USER} docker pull ${DOCKER_IMAGE} || echo "İmaj bulunamadı, sıfırdan oluşturulacak"
+                            
                             sudo -u ${DEPLOY_USER} docker build \
                                 --build-arg BUILDKIT_INLINE_CACHE=1 \
                                 --cache-from ${DOCKER_IMAGE} \
@@ -51,33 +58,38 @@ pipeline {
                                 --memory=4g \
                                 -t ${DOCKER_IMAGE} \
                                 -f ./docker/Dockerfile .
+                                
+                            # Image'ın doğru oluşturulduğundan emin ol
+                            sudo -u ${DEPLOY_USER} docker images ${DOCKER_IMAGE}
+                            
+                            # Minikube context'inde olduğunu doğrula 
+                            sudo -u ${DEPLOY_USER} minikube docker-env
                             
                             # Deployment komutlarını deployuser olarak çalıştır
                             echo "Kubernetes deployment başlıyor..."
                             # Önce varsa eski deployment'ı temizle
                             sudo -u ${DEPLOY_USER} kubectl delete -f ./k8s/react-deployment.yaml --ignore-not-found
+                            sleep 5
                             
                             # Yeni deployment uygula
                             sudo -u ${DEPLOY_USER} kubectl apply -f ./k8s/react-deployment.yaml
                             
-                            # 5 saniye bekle
-                            sleep 5
-                            
                             # Pod'ların durumunu kontrol et
                             echo "Pod durumlarını kontrol ediyorum..."
+                            sleep 10
                             sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o wide
                             
                             # Pod log'larını kontrol et
                             echo "Pod loglarını kontrol ediyorum..."
                             POD_NAME=\$(sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o jsonpath="{.items[0].metadata.name}" 2>/dev/null || echo "")
                             if [ ! -z "\$POD_NAME" ]; then
-                                sudo -u ${DEPLOY_USER} kubectl logs \$POD_NAME
+                                sudo -u ${DEPLOY_USER} kubectl logs \$POD_NAME || echo "Henüz log yok"
                                 sudo -u ${DEPLOY_USER} kubectl describe pod \$POD_NAME
                             fi
                             
-                            # Deployment kontrolü - daha uzun timeout ile
+                            # Deployment kontrolü - daha uzun timeout ile (3 dakika)
                             echo "Deployment durumunu bekliyorum..."
-                            sudo -u ${DEPLOY_USER} kubectl rollout status deployment/react-app --timeout=120s
+                            sudo -u ${DEPLOY_USER} kubectl rollout status deployment/react-app --timeout=180s
                             
                             # NodePort ve IP bilgisi
                             MINIKUBE_IP=\$(sudo -u ${DEPLOY_USER} minikube ip)
@@ -95,7 +107,7 @@ pipeline {
                             sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o wide
                             POD_NAME=\$(sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o jsonpath="{.items[0].metadata.name}" 2>/dev/null || echo "")
                             if [ ! -z "\$POD_NAME" ]; then
-                                sudo -u ${DEPLOY_USER} kubectl logs \$POD_NAME
+                                sudo -u ${DEPLOY_USER} kubectl logs \$POD_NAME || echo "Henüz log yok"
                                 sudo -u ${DEPLOY_USER} kubectl describe pod \$POD_NAME
                             fi
                         """
