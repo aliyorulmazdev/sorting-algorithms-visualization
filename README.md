@@ -4,7 +4,7 @@ This web application visualizes the performance of various sorting algorithms by
 
 # Getting Started
 
-To get started, you can clone this repository and run the following commands::
+To get started, you can clone this repository and run the following commqands::
 
 
 ## Install dependencies
