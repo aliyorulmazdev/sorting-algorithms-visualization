@@ -50,7 +50,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        sh """#!/bin/bash -e
+                        sh '''#!/bin/bash -e
                             # Ultra-hızlı build ve deployment
                             
                             # Mevcut imajı kontrol et
@@ -65,19 +65,19 @@ pipeline {
                                 echo "<html><body><h1>Demo App</h1></body></html>" > /tmp/react-app-build/build/index.html
                                 
                                 # Basit Dockerfile'ı kullan - yönlendirme sorununu düzelten basit yapılandırma
-                                cat > /tmp/react-app-build/Dockerfile << EOF
+                                cat > /tmp/react-app-build/Dockerfile << 'EOF'
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 COPY ./build /usr/share/nginx/html
 # Düzeltilmiş nginx yapılandırması - 301 yönlendirme sorununu çözen
-RUN echo 'server { \\
-    listen 80 default_server; \\
-    server_name _; \\
-    root /usr/share/nginx/html; \\
-    location / { \\
-        try_files \\$uri \\$uri/ /index.html; \\
-        index index.html; \\
-    } \\
+RUN echo 'server { 
+    listen 80 default_server; 
+    server_name _; 
+    root /usr/share/nginx/html; 
+    location / { 
+        try_files $uri $uri/ /index.html; 
+        index index.html; 
+    } 
 }' > /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
@@ -120,23 +120,23 @@ EOF
                             sudo -u ${DEPLOY_USER} kubectl rollout status deployment/react-app --timeout=60s || true
                             
                             # NodePort ve IP bilgisi
-                            MINIKUBE_IP=\$(sudo -u ${DEPLOY_USER} minikube ip)
+                            MINIKUBE_IP=$(sudo -u ${DEPLOY_USER} minikube ip)
                             echo ""
                             echo "====================================="
                             echo "Uygulama başarıyla deploy edildi!"
-                            echo "APP URL: http://\${MINIKUBE_IP}:30080"
+                            echo "APP URL: http://${MINIKUBE_IP}:30080"
                             echo "====================================="
-                        """
+                        '''
                     } catch (Exception e) {
                         echo "Build veya deployment hatası: ${e.getMessage()}"
                         // Hata durumunda bile pod durumlarını göster
                         sh """
                             echo "Hata durumunda pod bilgilerini kontrol ediyorum..."
                             sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o wide
-                            POD_NAME=\$(sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o jsonpath="{.items[0].metadata.name}" 2>/dev/null || echo "")
-                            if [ ! -z "\$POD_NAME" ]; then
-                                sudo -u ${DEPLOY_USER} kubectl logs \$POD_NAME || echo "Henüz log yok"
-                                sudo -u ${DEPLOY_USER} kubectl describe pod \$POD_NAME
+                            POD_NAME=$(sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o jsonpath="{.items[0].metadata.name}" 2>/dev/null || echo "")
+                            if [ ! -z "$POD_NAME" ]; then
+                                sudo -u ${DEPLOY_USER} kubectl logs $POD_NAME || echo "Henüz log yok"
+                                sudo -u ${DEPLOY_USER} kubectl describe pod $POD_NAME
                             fi
                             
                             # İmaj durumunu kontrol et
