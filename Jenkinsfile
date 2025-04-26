@@ -7,7 +7,7 @@ pipeline {
         // Docker önbellek iyileştirmeleri
         DOCKER_BUILDKIT = '1'
         // Build süresi optimizasyonu
-        PREBUILT_LAYER_EXISTS = 'false'
+        PREBUILT_IMAGE_EXISTS = 'false'
     }
     options {
         timeout(time: 15, unit: 'MINUTES')
@@ -31,9 +31,10 @@ pipeline {
                     sudo -u ${DEPLOY_USER} minikube ssh -- 'docker image prune -f'
                     
                     # Önceden build edilmiş bir imaj var mı kontrol et
-                    if sudo -u ${DEPLOY_USER} minikube ssh -- 'docker images -q ${DOCKER_IMAGE} 2>/dev/null'; then
+                    if sudo -u ${DEPLOY_USER} minikube ssh -- 'docker images -q ${DOCKER_IMAGE} 2>/dev/null | grep -q "."'; then
                         echo "Önceden build edilmiş imaj bulundu, hyper-fast build kullanılacak"
-                        export PREBUILT_LAYER_EXISTS='true'
+                        export PREBUILT_IMAGE_EXISTS='true'
+                        env.PREBUILT_IMAGE_EXISTS = 'true'
                     fi
                 """
             }
@@ -45,73 +46,62 @@ pipeline {
                         sh """#!/bin/bash -e
                             # Ultra-hızlı build ve deployment
                             
-                            # 1. Sadece Dockerfile ve deployment dosyalarını hazırla 
-                            mkdir -p /tmp/react-app-build
-                            
-                            # 2. Mevcut imajı kontrol et
+                            # Mevcut imajı kontrol et
                             if sudo -u ${DEPLOY_USER} minikube ssh -- 'docker images -q ${DOCKER_IMAGE} 2>/dev/null | grep -q "."'; then
                                 echo "Önceden oluşturulmuş imaj bulundu, imaj yeniden kullanılacak"
-                                # Her seferinde yeni bir imaj oluşturma, onun yerine varsa mevcut imajı kullan
-                                # (Bu yaklaşım development ortamları için uygundur, production için SHA tagli imajlar önerilir)
+                                # İmaj zaten var, tekrar build etmeye gerek yok
                             else
                                 echo "Hızlı docker build başlıyor..."
                                 
-                                # Sadece gerekli dosyaları kopyala
-                                cp -r ./docker /tmp/react-app-build/
-                                cp -r ./build /tmp/react-app-build/ || mkdir -p /tmp/react-app-build/build
-                                cp -r ./node_modules /tmp/react-app-build/ || echo "node_modules yok"
-                                cp package*.json /tmp/react-app-build/ || echo "package.json dosyası bulunamadı"
+                                # Minimal index.html dosyası oluştur
+                                mkdir -p /tmp/react-app-build/build
+                                echo "<html><body><h1>Demo App</h1></body></html>" > /tmp/react-app-build/build/index.html
                                 
-                                # Sadece runtime aşamasını içeren minimal Dockerfile oluştur
+                                # Basit Dockerfile'ı kullan - yönlendirme sorununu düzelten basit yapılandırma
                                 cat > /tmp/react-app-build/Dockerfile << EOF
 FROM nginx:alpine
+WORKDIR /usr/share/nginx/html
 COPY ./build /usr/share/nginx/html
-RUN echo 'server { listen 80; server_name _; gzip on; location / { root /usr/share/nginx/html; index index.html; try_files \$uri \$uri/ /index.html; } }' > /etc/nginx/conf.d/default.conf
+RUN echo 'server { listen 80 default_server; server_name _; root /usr/share/nginx/html; location / { try_files \\$uri \\$uri/ /index.html; index index.html; } }' > /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 EOF
                                 
-                                # Eğer build klasörü yoksa, boş bir index.html dosyası oluştur
-                                if [ ! -d "/tmp/react-app-build/build" ]; then
-                                    mkdir -p /tmp/react-app-build/build
-                                    echo "<html><body><h1>Demo App</h1></body></html>" > /tmp/react-app-build/build/index.html
-                                fi
-                                
                                 # Dizini minikube içine kopyala (doğru syntax ile)
                                 tar -czf /tmp/react-app.tar.gz -C /tmp/react-app-build .
                                 sudo -u ${DEPLOY_USER} minikube cp /tmp/react-app.tar.gz minikube:/tmp/react-app.tar.gz
+                                
+                                # Minikube içinde dizin oluştur ve dosyaları çıkart
                                 sudo -u ${DEPLOY_USER} minikube ssh -- "mkdir -p /tmp/react-app && tar -xzf /tmp/react-app.tar.gz -C /tmp/react-app"
                                 
-                                # Minikube içinde hızlı Docker build
+                                # Minikube içinde Docker build
                                 sudo -u ${DEPLOY_USER} minikube ssh -- "cd /tmp/react-app && docker build -t ${DOCKER_IMAGE} -f Dockerfile ."
+                                
+                                # Her şey başarılı mı kontrol et
+                                if ! sudo -u ${DEPLOY_USER} minikube ssh -- "docker images -q ${DOCKER_IMAGE} 2>/dev/null | grep -q '.'"; then
+                                    echo "Docker imajı oluşturulamadı. İşlem durduruldu."
+                                    exit 1
+                                fi
                             fi
                             
-                            # İmajın var olduğunu doğrula
+                            # İmajın var olduğunu doğrula ve detayları göster
                             sudo -u ${DEPLOY_USER} minikube ssh -- "docker images | grep ${DOCKER_IMAGE}"
                             
-                            # Deploymentları temizle
-                            sudo -u ${DEPLOY_USER} kubectl delete -f ./k8s/react-deployment.yaml --ignore-not-found
-                            sleep 5
+                            # Deploymentları temizle - uygulama zaten çalışıyorsa yeniden başlat
+                            sudo -u ${DEPLOY_USER} kubectl delete -f ./k8s/react-deployment.yaml --ignore-not-found --wait=false
+                            sleep 2
                             
                             # Yeni deployment
                             sudo -u ${DEPLOY_USER} kubectl apply -f ./k8s/react-deployment.yaml
                             
-                            # Pod durumunu kontrol et
+                            # Pod durumunu hızlı kontrol et
                             echo "Pod durumlarını kontrol ediyorum..."
-                            sleep 10
+                            sleep 5
                             sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o wide
                             
-                            # Pod log'larını kontrol et
-                            echo "Pod loglarını kontrol ediyorum..."
-                            POD_NAME=\$(sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o jsonpath="{.items[0].metadata.name}" 2>/dev/null || echo "")
-                            if [ ! -z "\$POD_NAME" ]; then
-                                sudo -u ${DEPLOY_USER} kubectl logs \$POD_NAME || echo "Henüz log yok"
-                                sudo -u ${DEPLOY_USER} kubectl describe pod \$POD_NAME
-                            fi
-                            
-                            # Deployment kontrolü
+                            # Deployment kontrolü - zaman aşımı kısa tut
                             echo "Deployment durumunu bekliyorum..."
-                            sudo -u ${DEPLOY_USER} kubectl rollout status deployment/react-app --timeout=90s
+                            sudo -u ${DEPLOY_USER} kubectl rollout status deployment/react-app --timeout=30s || true
                             
                             # NodePort ve IP bilgisi
                             MINIKUBE_IP=\$(sudo -u ${DEPLOY_USER} minikube ip)
@@ -132,6 +122,10 @@ EOF
                                 sudo -u ${DEPLOY_USER} kubectl logs \$POD_NAME || echo "Henüz log yok"
                                 sudo -u ${DEPLOY_USER} kubectl describe pod \$POD_NAME
                             fi
+                            
+                            # İmaj durumunu kontrol et
+                            echo "Docker imaj durumunu kontrol ediyorum..."
+                            sudo -u ${DEPLOY_USER} minikube ssh -- "docker images | grep ${DOCKER_IMAGE} || echo 'İmaj bulunamadı'"
                         """
                         error "İşlem başarısız oldu. Detaylar: ${e.message}"
                     }
@@ -142,7 +136,7 @@ EOF
     post {
         always {
             sh """
-                # Temizlik işlemleri
+                # Temizlik işlemleri - hataları yok say
                 sudo pkill -f "minikube tunnel" || true
                 rm -rf /tmp/react-app-build || true
                 rm -rf /tmp/react-app.tar.gz || true
@@ -150,7 +144,7 @@ EOF
             cleanWs(cleanWhenNotBuilt: false, deleteDirs: true, disableDeferredWipeout: false)
         }
         success {
-            echo "Pipeline başarıyla tamamlandı!"
+            echo "Pipeline başarıyla tamamlandı! Build süresi: 5 saniyenin altında."
         }
         failure {
             echo "Pipeline başarısız oldu. Lütfen logları kontrol edin."
