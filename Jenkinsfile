@@ -8,7 +8,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main', 
-                url: 'https://github.com/<KULLANICI_ADI>/<REPO_ADI>.git'
+                url: 'https://github.com/aliyorulmazdev/sorting-algorithms-visualization.git'
             }
         }
         stage('Build Docker Image') {
