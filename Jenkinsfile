@@ -24,19 +24,26 @@ pipeline {
         }
         stage('Prepare Minikube') {
             steps {
-                sh """
-                    sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start --driver=docker --memory=4000 --cpus=2
+                script {
+                    def minikubeOutput = sh(script: """
+                        sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start --driver=docker --memory=4000 --cpus=2
+                        
+                        # Docker imaj önbelleğini temizleme (sadece dangling imajlar için)
+                        sudo -u ${DEPLOY_USER} minikube ssh -- 'docker image prune -f'
+                        
+                        # Önceden build edilmiş bir imaj var mı kontrol et
+                        if sudo -u ${DEPLOY_USER} minikube ssh -- 'docker images -q ${DOCKER_IMAGE} 2>/dev/null | grep -q "."'; then
+                            echo "IMAGE_EXISTS=true"
+                        else
+                            echo "IMAGE_EXISTS=false"
+                        fi
+                    """, returnStdout: true).trim()
                     
-                    # Docker imaj önbelleğini temizleme (sadece dangling imajlar için)
-                    sudo -u ${DEPLOY_USER} minikube ssh -- 'docker image prune -f'
-                    
-                    # Önceden build edilmiş bir imaj var mı kontrol et
-                    if sudo -u ${DEPLOY_USER} minikube ssh -- 'docker images -q ${DOCKER_IMAGE} 2>/dev/null | grep -q "."'; then
+                    if (minikubeOutput.contains("IMAGE_EXISTS=true")) {
                         echo "Önceden build edilmiş imaj bulundu, hyper-fast build kullanılacak"
-                        export PREBUILT_IMAGE_EXISTS='true'
                         env.PREBUILT_IMAGE_EXISTS = 'true'
-                    fi
-                """
+                    }
+                }
             }
         }
         stage('Build and Deploy') {
