@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: react-app
-        image: docker.io/library/react-app:latest
+        image: react-app:latest
         imagePullPolicy: Never
         ports:
         - containerPort: 80
