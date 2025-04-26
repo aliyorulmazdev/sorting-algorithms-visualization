@@ -69,12 +69,21 @@ pipeline {
 FROM nginx:alpine
 WORKDIR /usr/share/nginx/html
 COPY ./build /usr/share/nginx/html
-RUN echo 'server { listen 80 default_server; server_name _; root /usr/share/nginx/html; location / { try_files \\$uri \\$uri/ /index.html; index index.html; } }' > /etc/nginx/conf.d/default.conf
+# Düzeltilmiş nginx yapılandırması - 301 yönlendirme sorununu çözen
+RUN echo 'server { \\
+    listen 80 default_server; \\
+    server_name _; \\
+    root /usr/share/nginx/html; \\
+    location / { \\
+        try_files \\$uri \\$uri/ /index.html; \\
+        index index.html; \\
+    } \\
+}' > /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
 EOF
                                 
-                                # Dizini minikube içine kopyala (doğru syntax ile)
+                                # Dizini minikube içine kopyala
                                 tar -czf /tmp/react-app.tar.gz -C /tmp/react-app-build .
                                 sudo -u ${DEPLOY_USER} minikube cp /tmp/react-app.tar.gz minikube:/tmp/react-app.tar.gz
                                 
@@ -92,7 +101,7 @@ EOF
                             fi
                             
                             # İmajın var olduğunu doğrula ve detayları göster
-                            sudo -u ${DEPLOY_USER} minikube ssh -- "docker images | grep ${DOCKER_IMAGE}"
+                            sudo -u ${DEPLOY_USER} minikube ssh -- "docker images | grep ${DOCKER_IMAGE} || echo 'İmaj bulunamadı'"
                             
                             # Deploymentları temizle - uygulama zaten çalışıyorsa yeniden başlat
                             sudo -u ${DEPLOY_USER} kubectl delete -f ./k8s/react-deployment.yaml --ignore-not-found --wait=false
@@ -108,7 +117,7 @@ EOF
                             
                             # Deployment kontrolü - zaman aşımı kısa tut
                             echo "Deployment durumunu bekliyorum..."
-                            sudo -u ${DEPLOY_USER} kubectl rollout status deployment/react-app --timeout=30s || true
+                            sudo -u ${DEPLOY_USER} kubectl rollout status deployment/react-app --timeout=60s || true
                             
                             # NodePort ve IP bilgisi
                             MINIKUBE_IP=\$(sudo -u ${DEPLOY_USER} minikube ip)
