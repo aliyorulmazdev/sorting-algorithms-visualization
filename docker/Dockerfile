@@ -22,38 +22,36 @@ FROM nginx:alpine AS runtime
 COPY --from=builder /app/build /usr/share/nginx/html
 
 # Nginx yapılandırması - inline olarak oluştur
-RUN cat > /etc/nginx/conf.d/default.conf << 'EOL'
-server {
-    listen 80;
-    server_name _;
-    
-    # Gzip sıkıştırma
-    gzip on;
-    gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
-    
-    # React uygulaması için
-    location / {
-        root /usr/share/nginx/html;
-        index index.html;
-        try_files $uri $uri/ /index.html;
-        
-        # Cache optimizasyonları
-        expires 1d;
-        add_header Cache-Control "public, max-age=86400";
-    }
-    
-    # Statik dosyalar için cache
-    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ {
-        expires 30d;
-        add_header Cache-Control "public, max-age=2592000";
-    }
-    
-    error_page 500 502 503 504 /50x.html;
-    location = /50x.html {
-        root /usr/share/nginx/html;
-    }
-}
-EOL
+RUN echo 'server { \
+    listen 80; \
+    server_name _; \
+    \
+    # Gzip sıkıştırma \
+    gzip on; \
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml; \
+    \
+    # React uygulaması için \
+    location / { \
+        root /usr/share/nginx/html; \
+        index index.html; \
+        try_files $uri $uri/ /index.html; \
+        \
+        # Cache optimizasyonları \
+        expires 1d; \
+        add_header Cache-Control "public, max-age=86400"; \
+    } \
+    \
+    # Statik dosyalar için cache \
+    location ~* \.(js|css|png|jpg|jpeg|gif|ico|svg)$ { \
+        expires 30d; \
+        add_header Cache-Control "public, max-age=2592000"; \
+    } \
+    \
+    error_page 500 502 503 504 /50x.html; \
+    location = /50x.html { \
+        root /usr/share/nginx/html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
 
 # Gereksiz dosyaları temizle
 RUN rm -rf /var/cache/apk/* && \
