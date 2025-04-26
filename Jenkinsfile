@@ -21,8 +21,8 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 withKubeConfig([credentialsId: 'kube-config']) {
-                    sh 'kubectl apply -f react-deployment.yaml'
-                    sh 'kubectl rollout restart deployment/react-app'
+                    sh 'kubectl apply -f k8s/react-deployment.yaml'
+                    sh 'kubectl rollout status deployment/react-app'
                 }
             }
         }
