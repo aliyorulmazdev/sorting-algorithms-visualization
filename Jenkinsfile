@@ -3,87 +3,106 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'react-app:latest'
         K8S_NAMESPACE = 'default'
+        DEPLOY_USER = 'deployuser'
     }
     stages {
         stage('Checkout Code') {
             steps {
                 checkout([$class: 'GitSCM', 
                          branches: [[name: 'main']],
-                         extensions: [],
+                         extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'src']],
                          userRemoteConfigs: [[url: 'https://github.com/aliyorulmazdev/sorting-algorithms-visualization.git']]])
             }
         }
 
-        stage('Start Minikube') {
+        stage('Initialize Minikube') {
             steps {
-                sh '''
-                    # Minikube'i başlat veya durumunu kontrol et
-                    minikube status || minikube start --driver=docker
-                    minikube addons enable ingress
-                '''
+                sh """
+                    # Cleanup previous instance
+                    sudo -u ${DEPLOY_USER} minikube delete || true
+                    
+                    # Start with optimized settings
+                    sudo -u ${DEPLOY_USER} minikube start \
+                        --driver=docker \
+                        --container-runtime=containerd \
+                        --memory=4000 \
+                        --cpus=2 \
+                        --addons=ingress,metrics-server \
+                        --embed-certs=true
+                    
+                    # Configure kubectl access
+                    sudo cp /home/${DEPLOY_USER}/.kube/config /var/lib/jenkins/.kube/
+                    sudo chown jenkins:jenkins /var/lib/jenkins/.kube/config
+                """
             }
         }
 
-        stage('Setup Environment') {
+        stage('Build Image') {
             steps {
-                script {
-                    // Docker environment ayarlarını al
-                    env.DOCKER_ENV = sh(script: 'minikube docker-env', returnStdout: true).trim()
-                    // Kubeconfig'i ayarla
-                    sh '''
-                        mkdir -p ~/.kube
-                        minikube kubectl -- config view --flatten > ~/.kube/config
-                        chmod 600 ~/.kube/config
-                    '''
-                }
+                sh """
+                    # Use deployuser's docker environment
+                    eval \$(sudo -u ${DEPLOY_USER} minikube docker-env)
+                    
+                    # Build with cache optimization
+                    docker build \\
+                        -t ${DOCKER_IMAGE} \\
+                        --build-arg NODE_ENV=production \\
+                        --no-cache \\
+                        ./src
+                """
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Deploy Application') {
             steps {
-                sh '''
-                    # Minikube'in Docker environment'ını kullan
-                    eval $(minikube docker-env)
-                    docker build -t ${DOCKER_IMAGE} .
-                '''
-            }
-        }
-
-        stage('Deploy to Kubernetes') {
-            steps {
-                sh '''
-                    # Deployment'ı uygula
-                    kubectl apply -f k8s/react-deployment.yaml
+                sh """
+                    # Apply Kubernetes manifests
+                    kubectl apply -f ./src/k8s/ -n ${K8S_NAMESPACE}
                     
-                    # Durumu kontrol et
-                    kubectl rollout status deployment/react-app --timeout=3m
+                    # Wait for rollout
+                    kubectl rollout status deployment/react-app -n ${K8S_NAMESPACE} --timeout=180s
                     
-                    # Tunnel'ı başlat
-                    nohup minikube tunnel >/dev/null 2>&1 &
-                    sleep 10
+                    # Start tunnel in background
+                    nohup sudo -u ${DEPLOY_USER} minikube tunnel >/dev/null 2>&1 &
+                    sleep 15
                     
-                    # Servis bilgilerini göster
-                    echo "Application URL:"
-                    minikube service react-service --url
-                '''
+                    # Get service info
+                    echo "### DEPLOYMENT STATUS ###"
+                    kubectl get all -n ${K8S_NAMESPACE}
+                    
+                    echo "### APPLICATION URL ###"
+                    sudo -u ${DEPLOY_USER} minikube service react-service --url -n ${K8S_NAMESPACE}
+                """
             }
         }
     }
     post {
         always {
             sh '''
-                # Tunnel'ı temizle
-                pkill -f "minikube tunnel" || true
+                # Cleanup tunnel
+                sudo pkill -f "minikube tunnel" || true
+                
+                # Verify cleanup
+                ps aux | grep "[m]inikube tunnel" || echo "No tunnel processes found"
             '''
             cleanWs()
         }
         failure {
+            slackSend(
+                color: 'danger',
+                message: "FAILED: Job ${env.JOB_NAME} #${env.BUILD_NUMBER}\n${env.BUILD_URL}"
+            )
             sh '''
-                echo "=== HATA DETAYLARI ==="
-                kubectl get pods --all-namespaces
-                kubectl describe deployment/react-app
-                kubectl logs -l app=react-app --tail=50
+                echo "### ERROR DETAILS ###"
+                kubectl describe pods -l app=react-app
+                kubectl logs -l app=react-app --tail=100
             '''
+        }
+        success {
+            slackSend(
+                color: 'good',
+                message: "SUCCESS: Job ${env.JOB_NAME} #${env.BUILD_NUMBER}\nDeployed: \$(minikube service react-service --url)"
+            )
         }
     }
 }
