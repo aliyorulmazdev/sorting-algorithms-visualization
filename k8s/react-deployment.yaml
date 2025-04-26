@@ -2,8 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: react-app
-  labels:
-    app: react-app
 spec:
   replicas: 2
   selector:
@@ -39,20 +37,18 @@ spec:
             port: 80
           initialDelaySeconds: 5
           periodSeconds: 5
+
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: react-service
-  labels:
-    app: react-app
 spec:
   type: LoadBalancer
   selector:
     app: react-app
   ports:
-    - name: http
-      protocol: TCP
+    - protocol: TCP
       port: 80
       targetPort: 80
-      nodePort: 30080  # Özel NodePort belirttik (opsiyonel)
+      nodePort: 30080
