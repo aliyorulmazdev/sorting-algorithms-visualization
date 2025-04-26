@@ -18,11 +18,12 @@ pipeline {
         stage('Prepare Minikube') {
             steps {
                 sh """
-                    sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start \
-                        --driver=docker \
-                        --memory=4000 \
+                    sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start \\
+                        --driver=docker \\
+                        --memory=4000 \\
                         --cpus=2
 
+                    mkdir -p /var/lib/jenkins/.kube
                     sudo cp /home/${DEPLOY_USER}/.kube/config /var/lib/jenkins/.kube/config
                     sudo chown -R jenkins:jenkins /var/lib/jenkins/.kube
                 """
@@ -38,7 +39,7 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy to Minikube') {
             steps {
                 sh """
                     kubectl apply -f ./k8s/react-deployment.yaml
@@ -51,6 +52,7 @@ pipeline {
             }
         }
     }
+
     post {
         always {
             sh """
