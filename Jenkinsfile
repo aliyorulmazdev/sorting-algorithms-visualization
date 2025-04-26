@@ -3,78 +3,93 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'react-app:latest'
         K8S_NAMESPACE = 'default'
-        K8S_MANIFEST_FILE = 'k8s/react-deployment.yaml'  // Yeni YAML dosyanızın yolu
+        K8S_MANIFEST_FILE = 'k8s/react-deployment.yaml'
     }
     stages {
         stage('Checkout Code') {
             steps {
-                git branch: 'main', 
-                url: 'https://github.com/aliyorulmazdev/sorting-algorithms-visualization.git'
+                checkout([$class: 'GitSCM', 
+                         branches: [[name: 'main']],
+                         extensions: [],
+                         userRemoteConfigs: [[url: 'https://github.com/aliyorulmazdev/sorting-algorithms-visualization.git']]])
+            }
+        }
+        
+        stage('Setup Minikube Environment') {
+            steps {
+                script {
+                    // Minikube Docker environment setup
+                    def minikubeEnv = sh(script: 'minikube docker-env', returnStdout: true).trim()
+                    env.MINIKUBE_DOCKER_ENV = minikubeEnv
+                }
+                sh '''
+                    # Apply Minikube docker environment
+                    eval ${MINIKUBE_DOCKER_ENV}
+                    docker info
+                '''
             }
         }
         
         stage('Build Docker Image') {
             steps {
-                script {
-                    // Minikube'in Docker daemon'ını kullan
-                    sh 'eval $(minikube docker-env)'
-                    docker.build("${DOCKER_IMAGE}")
-                }
-            }
-        }
-        
-        stage('Prepare Kubernetes') {
-            steps {
                 sh '''
-                    # Minikube context'ini ayarla
-                    minikube update-context
-                    
-                    # Cluster bilgilerini kontrol et
-                    kubectl cluster-info
-                    kubectl get nodes
+                    # Build with Minikube's Docker
+                    docker build -t ${DOCKER_IMAGE} .
+                    docker images | grep react-app
                 '''
             }
         }
         
         stage('Deploy to Kubernetes') {
             steps {
-                sh """
-                    # Kubernetes manifest'ini uygula
+                sh '''
+                    # Configure kubectl
+                    minikube kubectl -- config view --raw > ~/.kube/config
+                    chmod 600 ~/.kube/config
+                    
+                    # Verify cluster access
+                    kubectl cluster-info
+                    kubectl get nodes
+                    
+                    # Apply Kubernetes manifests
                     kubectl apply -f ${K8S_MANIFEST_FILE} -n ${K8S_NAMESPACE}
                     
-                    # Deployment durumunu kontrol et
+                    # Wait for deployment
                     kubectl rollout status deployment/react-app -n ${K8S_NAMESPACE} --timeout=3m
                     
-                    # LoadBalancer için tunnel başlat (arka planda)
+                    # Start Minikube tunnel in background
                     nohup minikube tunnel >/dev/null 2>&1 &
+                    sleep 10  # Wait for tunnel to establish
                     
-                    # Servis bilgilerini göster
-                    echo "Deployment ve Service durumu:"
+                    # Get service info
+                    echo "Deployment and Service status:"
                     kubectl get deployment,svc -n ${K8S_NAMESPACE} -l app=react-app
                     
-                    # Erişim URL'sini al
-                    echo "Uygulama erişim URL'si:"
-                    minikube service react-service --url -n ${K8S_NAMESPACE} | head -n1
-                """
+                    # Get application URL
+                    echo "Application URL:"
+                    minikube service react-service --url -n ${K8S_NAMESPACE} || true
+                '''
             }
         }
     }
     post {
         always {
             sh '''
-                # Tunnel process'ini temizle
+                # Cleanup tunnel process
                 pkill -f "minikube tunnel" || true
             '''
+            cleanWs()
         }
         success {
-            slackSend(color: 'good', message: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'")
+            echo "Deployment Successful: ${BUILD_URL}"
+            // Remove slackSend if plugin not installed
         }
         failure {
-            slackSend(color: 'danger', message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'")
+            echo "Deployment Failed: ${BUILD_URL}"
             sh '''
-                # Hata detaylarını göster
-                kubectl describe deployment/react-app -n ${K8S_NAMESPACE}
-                kubectl logs -l app=react-app -n ${K8S_NAMESPACE} --tail=50
+                echo "Error details:"
+                kubectl describe deployment/react-app -n ${K8S_NAMESPACE} || true
+                kubectl logs -l app=react-app -n ${K8S_NAMESPACE} --tail=50 || true
             '''
         }
     }
