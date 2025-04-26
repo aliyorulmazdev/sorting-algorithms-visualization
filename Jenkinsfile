@@ -33,8 +33,14 @@ pipeline {
                     # Build the Docker image
                     docker build -t ${DOCKER_IMAGE} -f ./docker/Dockerfile .
                     
-                    # Save and load image to Minikube
-                    docker save ${DOCKER_IMAGE} | sudo -u ${DEPLOY_USER} minikube ssh -- docker load
+                    # Save the Docker image to a file
+                    docker save ${DOCKER_IMAGE} > /tmp/react-app-image.tar
+                    
+                    # Copy the image file to minikube and load it
+                    cat /tmp/react-app-image.tar | sudo -u ${DEPLOY_USER} minikube ssh -- docker load
+                    
+                    # Clean up the temporary file
+                    rm -f /tmp/react-app-image.tar
                 """
             }
         }
@@ -62,6 +68,8 @@ pipeline {
             sh """
                 # Clean up minikube tunnel process
                 sudo pkill -f "minikube tunnel" || true
+                # Remove any temporary files
+                rm -f /tmp/react-app-image.tar
             """
             cleanWs()
         }
