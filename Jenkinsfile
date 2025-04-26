@@ -22,8 +22,8 @@ pipeline {
                         --driver=docker \
                         --memory=4000 \
                         --cpus=2
-                    
-                    sudo cp /home/${DEPLOY_USER}/.kube/config /var/lib/jenkins/.kube/
+
+                    sudo cp /home/${DEPLOY_USER}/.kube/config /var/lib/jenkins/.kube/config
                     sudo chown -R jenkins:jenkins /var/lib/jenkins/.kube
                 """
             }
@@ -53,7 +53,9 @@ pipeline {
     }
     post {
         always {
-            sh 'sudo pkill -f "minikube tunnel" || true'
+            sh """
+                sudo pkill -f "minikube tunnel" || true
+            """
             cleanWs()
         }
     }
