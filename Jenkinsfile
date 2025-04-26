@@ -27,20 +27,14 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 sh """
-                    # Clean up any old docker images
+                    # Minikube'un Docker daemon'ını kullanmak için eval komutu çalıştır
+                    eval \$(sudo -u ${DEPLOY_USER} minikube docker-env)
+                    
+                    # Docker sistem temizleme
                     sudo -u ${DEPLOY_USER} minikube ssh -- docker system prune -af
                     
-                    # Build the Docker image
-                    docker build -t ${DOCKER_IMAGE} -f ./docker/Dockerfile .
-                    
-                    # Save the Docker image to a file
-                    docker save ${DOCKER_IMAGE} > /tmp/react-app-image.tar
-                    
-                    # Copy the image file to minikube and load it
-                    cat /tmp/react-app-image.tar | sudo -u ${DEPLOY_USER} minikube ssh -- docker load
-                    
-                    # Clean up the temporary file
-                    rm -f /tmp/react-app-image.tar
+                    # Minikube'un Docker daemon'ını kullanarak image'ı oluştur
+                    sudo -u ${DEPLOY_USER} docker build -t ${DOCKER_IMAGE} -f ./docker/Dockerfile .
                 """
             }
         }
@@ -68,8 +62,6 @@ pipeline {
             sh """
                 # Clean up minikube tunnel process
                 sudo pkill -f "minikube tunnel" || true
-                # Remove any temporary files
-                rm -f /tmp/react-app-image.tar
             """
             cleanWs()
         }
