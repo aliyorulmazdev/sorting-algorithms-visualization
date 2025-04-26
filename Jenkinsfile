@@ -6,103 +6,63 @@ pipeline {
         DEPLOY_USER = 'deployuser'
     }
     stages {
-        stage('Checkout Code') {
+        stage('Checkout') {
             steps {
-                checkout([$class: 'GitSCM', 
-                         branches: [[name: 'main']],
-                         extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'src']],
-                         userRemoteConfigs: [[url: 'https://github.com/aliyorulmazdev/sorting-algorithms-visualization.git']]])
+                checkout([$class: 'GitSCM',
+                    branches: [[name: 'main']],
+                    extensions: [[$class: 'RelativeTargetDirectory', relativeTargetDir: 'app']],
+                    userRemoteConfigs: [[url: 'https://github.com/aliyorulmazdev/sorting-algorithms-visualization.git']]
+                ])
             }
         }
 
-        stage('Initialize Minikube') {
+        stage('Minikube Setup') {
             steps {
                 sh """
-                    # Cleanup previous instance
+                    # Cleanup
                     sudo -u ${DEPLOY_USER} minikube delete || true
                     
-                    # Start with optimized settings
+                    # Start Minikube with optimized config
                     sudo -u ${DEPLOY_USER} minikube start \
                         --driver=docker \
-                        --container-runtime=containerd \
                         --memory=4000 \
                         --cpus=2 \
-                        --addons=ingress,metrics-server \
-                        --embed-certs=true
+                        --addons=ingress,metrics-server
                     
-                    # Configure kubectl access
+                    # Configure access
                     sudo cp /home/${DEPLOY_USER}/.kube/config /var/lib/jenkins/.kube/
                     sudo chown jenkins:jenkins /var/lib/jenkins/.kube/config
                 """
             }
         }
 
-        stage('Build Image') {
+        stage('Build') {
             steps {
                 sh """
-                    # Use deployuser's docker environment
                     eval \$(sudo -u ${DEPLOY_USER} minikube docker-env)
-                    
-                    # Build with cache optimization
-                    docker build \\
-                        -t ${DOCKER_IMAGE} \\
-                        --build-arg NODE_ENV=production \\
-                        --no-cache \\
-                        ./src
+                    docker build -t ${DOCKER_IMAGE} ./app
                 """
             }
         }
 
-        stage('Deploy Application') {
+        stage('Deploy') {
             steps {
                 sh """
-                    # Apply Kubernetes manifests
-                    kubectl apply -f ./src/k8s/ -n ${K8S_NAMESPACE}
+                    kubectl apply -f ./app/k8s/
+                    kubectl rollout status deployment/react-app --timeout=2m
                     
-                    # Wait for rollout
-                    kubectl rollout status deployment/react-app -n ${K8S_NAMESPACE} --timeout=180s
-                    
-                    # Start tunnel in background
+                    # Start tunnel and get URL
                     nohup sudo -u ${DEPLOY_USER} minikube tunnel >/dev/null 2>&1 &
                     sleep 15
-                    
-                    # Get service info
-                    echo "### DEPLOYMENT STATUS ###"
-                    kubectl get all -n ${K8S_NAMESPACE}
-                    
-                    echo "### APPLICATION URL ###"
-                    sudo -u ${DEPLOY_USER} minikube service react-service --url -n ${K8S_NAMESPACE}
+                    echo "APP URL: \$(sudo -u ${DEPLOY_USER} minikube service react-service --url)"
                 """
             }
         }
     }
     post {
         always {
-            sh '''
-                # Cleanup tunnel
-                sudo pkill -f "minikube tunnel" || true
-                
-                # Verify cleanup
-                ps aux | grep "[m]inikube tunnel" || echo "No tunnel processes found"
-            '''
+            sh 'sudo pkill -f "minikube tunnel" || true'
             cleanWs()
-        }
-        failure {
-            slackSend(
-                color: 'danger',
-                message: "FAILED: Job ${env.JOB_NAME} #${env.BUILD_NUMBER}\n${env.BUILD_URL}"
-            )
-            sh '''
-                echo "### ERROR DETAILS ###"
-                kubectl describe pods -l app=react-app
-                kubectl logs -l app=react-app --tail=100
-            '''
-        }
-        success {
-            slackSend(
-                color: 'good',
-                message: "SUCCESS: Job ${env.JOB_NAME} #${env.BUILD_NUMBER}\nDeployed: \$(minikube service react-service --url)"
-            )
         }
     }
 }
