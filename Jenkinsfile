@@ -4,7 +4,7 @@ pipeline {
         DOCKER_IMAGE = 'react-app:latest'
         K8S_NAMESPACE = 'default'
         DEPLOY_USER = 'deployuser'
-        # Docker önbellek iyileştirmeleri
+        // Docker önbellek iyileştirmeleri
         DOCKER_BUILDKIT = '1'
     }
     options {
