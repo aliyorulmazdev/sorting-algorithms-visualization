@@ -20,21 +20,21 @@ pipeline {
         }
         stage('Deploy to Kubernetes') {
             steps {
-                withKubeConfig([credentialsId: 'kube-config']) {
-                    sh 'kubectl apply -f k8s/react-deployment.yaml'
-                    sh 'kubectl rollout status deployment/react-app'
-                }
+                sh '''
+                    mkdir -p ~/.kube
+                    echo "$KUBE_CONFIG" > ~/.kube/config
+                    kubectl apply -f k8s/react-deployment.yaml
+                    kubectl rollout status deployment/react-app
+                '''
             }
         }
     }
     post {
         success {
-            slackSend channel: '#deployments',
-                message: "Deployment Successful: ${env.BUILD_URL}"
+            echo "Deployment Successful: ${BUILD_URL}"
         }
         failure {
-            slackSend channel: '#deployments',
-                message: "Deployment Failed: ${env.BUILD_URL}"
+            echo "Deployment Failed: ${BUILD_URL}"
         }
     }
 }
