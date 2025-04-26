@@ -27,10 +27,15 @@ pipeline {
                 script {
                     def minikubeOutput = sh(script: """
                         sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start --driver=docker --listen-address=0.0.0.0 --memory=4000 --cpus=2
-                        
-                        # Docker imaj önbelleğini temizleme (sadece dangling imajlar için)
                         sudo -u ${DEPLOY_USER} minikube ssh -- 'docker image prune -f'
-                        
+                        # Minikube tunnel'ı arka planda başlat
+                        sudo pkill -f "minikube tunnel" || true
+                        nohup sudo -u ${DEPLOY_USER} minikube tunnel --cleanup &
+                        # 30080 portunu aç (firewalld varsa)
+                        if command -v firewall-cmd >/dev/null 2>&1; then
+                          sudo firewall-cmd --add-port=30080/tcp --permanent || true
+                          sudo firewall-cmd --reload || true
+                        fi
                         # Önceden build edilmiş bir imaj var mı kontrol et
                         if sudo -u ${DEPLOY_USER} minikube ssh -- 'docker images -q ${DOCKER_IMAGE} 2>/dev/null | grep -q "."'; then
                             echo "IMAGE_EXISTS=true"
@@ -38,7 +43,6 @@ pipeline {
                             echo "IMAGE_EXISTS=false"
                         fi
                     """, returnStdout: true).trim()
-                    
                     if (minikubeOutput.contains("IMAGE_EXISTS=true")) {
                         echo "Önceden build edilmiş imaj bulundu, hyper-fast build kullanılacak"
                         env.PREBUILT_IMAGE_EXISTS = 'true'
