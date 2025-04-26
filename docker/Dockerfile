@@ -1,24 +1,27 @@
-# Build stage
-FROM node:18-alpine AS builder
-# Layer caching için önce bağımlılıkları kopyala ve kur
+# Çok aşamalı build: Bağımlılık kurulumu
+FROM node:18-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-# npm ci yerine normal npm install kullanımı
-RUN npm install --production=false --silent
+RUN npm install --only=production --no-audit --silent
 
-# Sadece derleme için gerekli dosyaları kopyala
-COPY public ./public
-COPY src ./src
-
-# Build süresini kısaltmak için önbelleği kullan
+# Build aşaması: Derleme
+FROM node:18-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+# Derleme işlemini hızlandırmak için
 ENV NODE_ENV=production
 ENV GENERATE_SOURCEMAP=false
 RUN npm run build
 
-# Sadece gerekli dosyaları içeren minimal üretim imajı
-FROM nginx:alpine
+# Üretim aşaması: Minimal imaj
+FROM nginx:alpine AS runtime
+# Nginx'i hızlandırmak için
 COPY --from=builder /app/build /usr/share/nginx/html
 COPY ./docker/nginx.conf /etc/nginx/conf.d/default.conf
-# Nginx'i hafif modda başlatma
+# Gereksiz dosyaları temizle
+RUN rm -rf /var/cache/apk/* && \
+    rm -rf /tmp/*
 EXPOSE 80
+# Nginx'i hafif modda başlat
 CMD ["nginx", "-g", "daemon off;"]
