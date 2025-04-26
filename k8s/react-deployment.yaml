@@ -16,8 +16,8 @@ spec:
     spec:
       containers:
       - name: react-app
-        image: react-app:latest
-        imagePullPolicy: IfNotPresent
+        image: docker.io/library/react-app:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 80
           name: http

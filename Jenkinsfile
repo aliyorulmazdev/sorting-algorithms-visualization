@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        DOCKER_IMAGE = 'react-app:latest'
+        DOCKER_IMAGE = 'docker.io/library/react-app:latest'
         K8S_NAMESPACE = 'default'
         DEPLOY_USER = 'deployuser'
         // Docker önbellek iyileştirmeleri
@@ -26,10 +26,6 @@ pipeline {
                     sudo -u ${DEPLOY_USER} minikube status || sudo -u ${DEPLOY_USER} minikube start --driver=docker --memory=4000 --cpus=2
                     # Docker imaj önbelleğini temizleme (sadece dangling imajlar için)
                     sudo -u ${DEPLOY_USER} minikube ssh -- 'docker image prune -f'
-                    
-                    # Docker context'i Minikube ile synchronize et
-                    echo "Docker daemon'ını Minikube'a yönlendiriyorum..."
-                    eval \$(sudo -u ${DEPLOY_USER} minikube docker-env)
                 """
             }
         }
@@ -50,6 +46,7 @@ pipeline {
                             # Build önbelleğini etkinleştir
                             sudo -u ${DEPLOY_USER} docker pull ${DOCKER_IMAGE} || echo "İmaj bulunamadı, sıfırdan oluşturulacak"
                             
+                            # Docker imaj adını tüm komutlarda aynı şekilde kullan
                             sudo -u ${DEPLOY_USER} docker build \
                                 --build-arg BUILDKIT_INLINE_CACHE=1 \
                                 --cache-from ${DOCKER_IMAGE} \
@@ -59,11 +56,11 @@ pipeline {
                                 -t ${DOCKER_IMAGE} \
                                 -f ./docker/Dockerfile .
                                 
-                            # Image'ın doğru oluşturulduğundan emin ol
-                            sudo -u ${DEPLOY_USER} docker images ${DOCKER_IMAGE}
+                            # Image'ın doğru oluşturulduğundan emin ol ve Minikube'un görmesini sağla
+                            sudo -u ${DEPLOY_USER} docker images | grep react-app
                             
-                            # Minikube context'inde olduğunu doğrula 
-                            sudo -u ${DEPLOY_USER} minikube docker-env
+                            # Yeni oluşturulan imajı Minikube içinde göster
+                            sudo -u ${DEPLOY_USER} minikube ssh -- 'docker images | grep react-app'
                             
                             # Deployment komutlarını deployuser olarak çalıştır
                             echo "Kubernetes deployment başlıyor..."
