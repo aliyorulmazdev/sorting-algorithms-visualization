@@ -130,7 +130,7 @@ EOF
                     } catch (Exception e) {
                         echo "Build veya deployment hatası: ${e.getMessage()}"
                         // Hata durumunda bile pod durumlarını göster
-                        sh """
+                        sh '''
                             echo "Hata durumunda pod bilgilerini kontrol ediyorum..."
                             sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o wide
                             POD_NAME=$(sudo -u ${DEPLOY_USER} kubectl get pods -l app=react-app -o jsonpath="{.items[0].metadata.name}" 2>/dev/null || echo "")
@@ -138,11 +138,10 @@ EOF
                                 sudo -u ${DEPLOY_USER} kubectl logs $POD_NAME || echo "Henüz log yok"
                                 sudo -u ${DEPLOY_USER} kubectl describe pod $POD_NAME
                             fi
-                            
                             # İmaj durumunu kontrol et
                             echo "Docker imaj durumunu kontrol ediyorum..."
                             sudo -u ${DEPLOY_USER} minikube ssh -- "docker images | grep ${DOCKER_IMAGE} || echo 'İmaj bulunamadı'"
-                        """
+                        '''
                         error "İşlem başarısız oldu. Detaylar: ${e.getMessage()}"
                     }
                 }
