@@ -28,10 +28,8 @@ yarn-error.log
 /logs
 *.log
 
-# Docker ve Kubernetes dosyaları
-/docker
+# Kubernetes dosyaları
 /k8s
-Dockerfile
 .dockerignore
 Jenkinsfile
 
